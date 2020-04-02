@@ -40,7 +40,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
     private const string SAVE_FOLDER_PATH = "Assets/EmoteSwitch V3/EmoteSwitchV3Editor/Animations/"; // 生成されるAnimationファイルが保存されるフォルダ
 
-    private const string IDLE_ANIMATION_FBX_PATH = "Assets/VRCSDK/Examples/Sample Assets/Animation/Male_Standing_Pose.fbx"; // Emoteアニメーションを参照するfbxまでのパス
+    private const string IDLE_ANIMATION_FBX_PATH = "Assets/VRCSDK/Examples2/Animation/Male_Standing_Pose.fbx"; // Emoteアニメーションを参照するfbxまでのパス
     private const string IDLE_ANIMATION_NAME = "IDLE"; // Emoteアニメーションとして参照するアニメーションの名前
 
     /***** 必要に応じてここまでの値を変更する *****/
