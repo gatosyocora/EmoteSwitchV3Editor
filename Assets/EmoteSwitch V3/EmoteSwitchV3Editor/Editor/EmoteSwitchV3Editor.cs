@@ -244,6 +244,15 @@ public class EmoteSwitchV3Editor : EditorWindow {
             }
         }
         EditorGUI.EndDisabledGroup();
+
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Undo before set Emote switch"))
+            {
+                Undo.PerformUndo();
+            }
+        }
     }
 
     /// <summary>
@@ -253,6 +262,8 @@ public class EmoteSwitchV3Editor : EditorWindow {
     /// <param name="props"></param>
     private void SetEmoteSwitchV3(GameObject avatarObj, List<GameObject> props)
     {
+        Undo.RegisterCompleteObjectUndo(avatarObj, "SetEmoteSwitchV3 to " + avatarObj.name);
+
         AnimationClip emoteOnAnimClip = null, emoteOffAnimClip = null;
         float emoteAnimTime = 0f;
 
@@ -281,7 +292,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
         // 2018からのPrefabシステムからSetParent時に自動的にUnPackしなくなった
         if (PrefabUtility.IsPartOfPrefabInstance(avatarObj))
         {
-            PrefabUtility.UnpackPrefabInstance(avatarObj, PrefabUnpackMode.Completely, InteractionMode.UserAction);
+            PrefabUtility.UnpackPrefabInstance(avatarObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
         }
 
         for (int i = 0; i < props.Count; i++)
@@ -298,6 +309,8 @@ public class EmoteSwitchV3Editor : EditorWindow {
             var emoteSwitchPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(emoteSwitchV3EditorFolderPath + PREFAB1_PATH);
             var emoteSwitchObj = Instantiate(emoteSwitchPrefab, propObj.transform.position, Quaternion.identity) as GameObject;
             emoteSwitchObj.name = "EmoteSwitch V3_" + propObj.name;
+            Undo.RegisterCreatedObjectUndo(emoteSwitchObj, "Instantiate " + emoteSwitchObj.name);
+            Undo.SetTransformParent(emoteSwitchObj.transform, parentTrans, emoteSwitchObj.name + " SetParent to " + parentTrans.name);
             emoteSwitchObj.transform.SetParent(parentTrans);
 
             // 名前の重複を防ぐ
@@ -307,7 +320,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
             // EmoteSwitchV3にpropObjを設定する
             var objectTrans = emoteSwitchObj.transform.Find(OBJECT_PATH_IN_PREFAB);
-            propObj.transform.SetParent(objectTrans);
+            Undo.SetTransformParent(propObj.transform, objectTrans, propObj.name + " SetParent to " + objectTrans.name);
             objectTrans.gameObject.SetActive(propStartState);
 
             // EmoteAnimationを作成する
