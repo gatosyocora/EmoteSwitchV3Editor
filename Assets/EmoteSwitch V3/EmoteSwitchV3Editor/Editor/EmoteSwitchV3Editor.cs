@@ -272,6 +272,13 @@ public class EmoteSwitchV3Editor : EditorWindow {
             emoteAnimTime = GetAnimationTime(emoteAnimClip);
         }
 
+        // PrefabのInstanceに対してSetParentする場合はUnpackする必要がある
+        // 2018からのPrefabシステムからSetParent時に自動的にUnPackしなくなった
+        if (PrefabUtility.IsPartOfPrefabInstance(avatarObj))
+        {
+            PrefabUtility.UnpackPrefabInstance(avatarObj, PrefabUnpackMode.Completely, InteractionMode.UserAction);
+        }
+
         for (int i = 0; i < props.Count; i++)
         {
             var propObj = props[i];
@@ -284,9 +291,9 @@ public class EmoteSwitchV3Editor : EditorWindow {
             // propObjと同じ位置にEmoteSwitchV3を作成する
             var parentTrans = propObj.transform.parent;
             var emoteSwitchPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PREFAB1_PATH);
-            var emoteSwitchObj = Instantiate(emoteSwitchPrefab, propObj.transform.position, Quaternion.identity);
+            var emoteSwitchObj = Instantiate(emoteSwitchPrefab, propObj.transform.position, Quaternion.identity) as GameObject;
             emoteSwitchObj.name = "EmoteSwitch V3_" + propObj.name;
-            emoteSwitchObj.transform.parent = parentTrans;
+            emoteSwitchObj.transform.SetParent(parentTrans);
 
             // 名前の重複を防ぐ
             var maxNum = GetSameNameObjectsMaxNumInBrother(emoteSwitchObj);
@@ -295,7 +302,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
             // EmoteSwitchV3にpropObjを設定する
             var objectTrans = emoteSwitchObj.transform.Find(OBJECT_PATH_IN_PREFAB);
-            propObj.transform.parent = objectTrans;
+            propObj.transform.SetParent(objectTrans);
             objectTrans.gameObject.SetActive(propStartState);
 
             // EmoteAnimationを作成する
