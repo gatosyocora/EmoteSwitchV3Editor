@@ -31,19 +31,21 @@ public class EmoteSwitchV3Editor : EditorWindow {
     private const string OBJECT_PATH_IN_PREFAB = "Joint/Toggle1/Object"; // Prefab内のObjectまでのパス
     private const string TOOGLE1_PATH_IN_PREFAB = "Joint/Toggle1"; // Prefab内のToogle1までのパス
 
-    private const string PREFAB1_PATH = "Assets/EmoteSwitch V3/EmoteSwitchV3Editor/EmoteSwitch V3_Editor.prefab"; // Prefabのファイルパス
+    private const string PREFAB1_PATH = "/EmoteSwitchV3Editor/EmoteSwitch V3_Editor.prefab"; // Prefabのファイルパス
 
-    private const string EMOTE_OFF_ANIMFILE_PATH = "Assets/EmoteSwitch V3/V3 Prefab/Emote_OFF/[1]Emote_OFF.anim"; // OFFにするキーが入ったコピー元のAnimationファイルのパス
-    private const string EMOTE_ON_ANIMFILE_PATH = "Assets/EmoteSwitch V3/V3 Prefab/Emote_ON/[1]Emote_ON.anim"; // ONにするキーが入ったコピー元のAnimationファイルのパス
+    private const string EMOTE_OFF_ANIMFILE_PATH = "/V3 Prefab/Emote_OFF/[1]Emote_OFF.anim"; // OFFにするキーが入ったコピー元のAnimationファイルのパス
+    private const string EMOTE_ON_ANIMFILE_PATH = "/V3 Prefab/Emote_ON/[1]Emote_ON.anim"; // ONにするキーが入ったコピー元のAnimationファイルのパス
 
-    private const string EMOTESWITCH_CONTROLLER_PATH = "Assets/EmoteSwitch V3/ToggleSwitch/Switch.controller"; // Toggle1のAnimatorに設定するAnimatorControllerまでのパス
+    private const string EMOTESWITCH_CONTROLLER_PATH = "/ToggleSwitch/Switch.controller"; // Toggle1のAnimatorに設定するAnimatorControllerまでのパス
 
-    private const string SAVE_FOLDER_PATH = "Assets/EmoteSwitch V3/EmoteSwitchV3Editor/Animations/"; // 生成されるAnimationファイルが保存されるフォルダ
+    private const string SAVE_FOLDER_PATH = "/EmoteSwitchV3Editor/Animations/"; // 生成されるAnimationファイルが保存されるフォルダ
 
-    private const string IDLE_ANIMATION_FBX_PATH = "Assets/VRCSDK/Examples2/Animation/Male_Standing_Pose.fbx"; // Emoteアニメーションを参照するfbxまでのパス
     private const string IDLE_ANIMATION_NAME = "IDLE"; // Emoteアニメーションとして参照するアニメーションの名前
 
     /***** 必要に応じてここまでの値を変更する *****/
+
+    private string emoteSwitchV3EditorFolderPath;
+    private string idleAniamtionFbxPath;
 
     private VRC_AvatarDescriptor m_avatar = null;
     private AnimatorOverrideController standingAnimController = null;
@@ -87,6 +89,9 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
         propStartStates = new List<bool>();
         propStartStates.Add(false);
+
+        emoteSwitchV3EditorFolderPath = GetEmoteSwitchV3EditorFolderPath();
+        idleAniamtionFbxPath = GetIdleAnimationFbxPath();
     }
 
     private void OnGUI()
@@ -290,7 +295,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
             // propObjと同じ位置にEmoteSwitchV3を作成する
             var parentTrans = propObj.transform.parent;
-            var emoteSwitchPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PREFAB1_PATH);
+            var emoteSwitchPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(emoteSwitchV3EditorFolderPath + PREFAB1_PATH);
             var emoteSwitchObj = Instantiate(emoteSwitchPrefab, propObj.transform.position, Quaternion.identity) as GameObject;
             emoteSwitchObj.name = "EmoteSwitch V3_" + propObj.name;
             emoteSwitchObj.transform.SetParent(parentTrans);
@@ -308,7 +313,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
             // EmoteAnimationを作成する
             var toggleObj = emoteSwitchObj.transform.Find(TOOGLE1_PATH_IN_PREFAB).gameObject;
             var animator = toggleObj.GetComponent<Animator>();
-            var controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(EMOTESWITCH_CONTROLLER_PATH);
+            var controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(emoteSwitchV3EditorFolderPath + EMOTESWITCH_CONTROLLER_PATH);
             animator.runtimeAnimatorController = controller;
             // 初期状態がActiveなら非Activeにする(propStartState==Active(true) -> TO_INACTIVE)
             if (emoteOnAnimClip == null)
@@ -372,13 +377,21 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
         if (useIdleAnim)
         {
-            var idleAnimClip = GetAnimationClipFromFbx(IDLE_ANIMATION_FBX_PATH, IDLE_ANIMATION_NAME);
+            var idleAnimClip = GetAnimationClipFromFbx(idleAniamtionFbxPath, IDLE_ANIMATION_NAME);
             CopyAnimationKeys(idleAnimClip, animClip);
         }
 
         string path = GetHierarchyPath(targetObj);
 
-        var animFilePath = (emoteType == TO_INACTIVE) ? EMOTE_OFF_ANIMFILE_PATH : EMOTE_ON_ANIMFILE_PATH;
+        string animFilePath = emoteSwitchV3EditorFolderPath;
+        if (emoteType == TO_INACTIVE)
+        {
+            animFilePath += EMOTE_OFF_ANIMFILE_PATH;
+        }
+        else
+        {
+            animFilePath += EMOTE_ON_ANIMFILE_PATH;
+        }
 
         var originClip = AssetDatabase.LoadAssetAtPath<AnimationClip>(animFilePath);
         var bindings = AnimationUtility.GetCurveBindings(originClip).ToArray();
@@ -410,7 +423,15 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
         string path = GetHierarchyPath(targetObj);
 
-        var animFilePath = (emoteType == TO_INACTIVE) ? EMOTE_OFF_ANIMFILE_PATH : EMOTE_ON_ANIMFILE_PATH;
+        string animFilePath = emoteSwitchV3EditorFolderPath;
+        if (emoteType == TO_INACTIVE)
+        {
+            animFilePath += EMOTE_OFF_ANIMFILE_PATH;
+        }
+        else
+        {
+            animFilePath += EMOTE_ON_ANIMFILE_PATH;
+        }
 
         var originClip = AssetDatabase.LoadAssetAtPath<AnimationClip>(animFilePath);
 
@@ -546,7 +567,8 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
         string fileName = objName + ((fileType == EMOTE_ON) ? "_ON" : "_OFF");
 
-        AssetDatabase.CreateAsset(animClip, AssetDatabase.GenerateUniqueAssetPath(SAVE_FOLDER_PATH + fileName + ".anim"));
+        AssetDatabase.CreateAsset(animClip, 
+            AssetDatabase.GenerateUniqueAssetPath(emoteSwitchV3EditorFolderPath + SAVE_FOLDER_PATH + fileName + ".anim"));
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
@@ -587,5 +609,29 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
         return num;
 
+    }
+
+    private string GetAssetPathForSearch(string filter)
+    {
+        var guid = AssetDatabase.FindAssets(filter).FirstOrDefault();
+        return AssetDatabase.GUIDToAssetPath(guid);
+    }
+
+    /// <summary>
+    /// EmoteSwitchV3のフォルダパスを取得する（Assets/...）
+    /// </summary>
+    /// <returns></returns>
+    private string GetEmoteSwitchV3EditorFolderPath()
+    {
+        return GetAssetPathForSearch("EmoteSwitch V3 t:Folder");
+    }
+
+    /// <summary>
+    /// Idleアニメーションを参照するFbxのパスを取得する（Assets/...）
+    /// </summary>
+    /// <returns></returns>
+    private string GetIdleAnimationFbxPath()
+    {
+        return GetAssetPathForSearch("Male_Standing_Pose t:Model");
     }
 }
