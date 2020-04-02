@@ -14,3 +14,8 @@ EmoteSwitchV3本体の利用規約を優先することとします。
 
 〇ライセンス表記
 (c) 2019 gatosyocora
+
+〇更新履歴
+v1.2	・Unity2018のPrefabシステムにあわせて変更
+			- SetParent前にUnpackPrefabの実施
+		・Undo機能を追加
