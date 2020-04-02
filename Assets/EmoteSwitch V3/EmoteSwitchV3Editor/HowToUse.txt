@@ -1,0 +1,36 @@
+EmoteSwitchV3 Editor
+EmoteSwitchV3を自動設定するツールです
+[オブジェクト名]_ONのEmoteを実行すると初期状態と逆になる（オブジェクトを出すなど）
+[オブジェクト名]_OFFのEmoteを実行すると初期状態になる（オブジェクトをしまうなど）
+
+〇はじめに
+本ツールは元怒さんが制作されたEmoteSwitchV3の設定を支援するものであり, 本体がなければ機能しません。
+あらかじめEmoteSwitchV3およびVRCSDKをUnityにインポートしてからインポートしてください。
+
+〇内容物
+・EmoteSwitchV3Editor.cs : ツール本体
+・EmoteSwitch V3_Editor.prefab : ツールで追加するEmoteSwitchV3のprefab
+・Sample_ON.anim, Sample_OFF.anim : 生成されるAnimationファイルのサンプル(削除してもいいです)
+・Animationsフォルダ : ツールで作成したAnimationファイルが保存されるフォルダ
+
+〇機能
+Avatar : EmoteSwitchを設定するアバター
+Prop Objects : EmoteSwitchで出し入れしたいオブジェクト。
+  +, - : 1つのEmoteSwitchで出す個数を変える
+  Default State : Propオブジェクトの初期状態（チェックなしで初期状態非表示）
+  Prop n : EmoteSwitchで出し入れしたいオブジェクト
+Standing Anims : Avatarに設定されているCustomOverrideController
+ON & OFF Emote : どのEmoteにEmoteSwitch用のアニメーションを設定するか
+EMOTE n : Standing AnimsのCustomOverrideControllerに設定されているEmote
+Advanced Setting : 応用的な使い方の設定をする項目
+  use IDLE Animation : チェックを入れるとEmote時に地面に埋まらないようにIDLEアニメーションのキーを追加します
+
+〇使い方
+1. EmoteSwitchで出し入れしたいオブジェクト(以下, Propオブジェクト)をアバターの中に配置します
+2. Unityのメニューの「EmoteSwitch」 -> 「EmoteSwitchV3 Editor」を選択します
+3. 「Avatar」にEmoteSwitchを設定したいアバターを設定します(VRC_AvatarDescriptorがついているオブジェクト)
+4. 「Prop 1」にPropオブジェクトを設定します。必要に応じて「Default State」にチェックを入れてください
+5. 「ON & OFF Emote」でどのEmoteにEmoteSwitch用のエモートを設定するか選択してください
+6. 「Set EmoteSwitch」を選択してください
+
+1つのエモートスイッチで複数のオブジェクトを出し入れしたい場合はPropObjectsの横の「+」で設定する個数を増やしてください
