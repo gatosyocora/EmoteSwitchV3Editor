@@ -60,4 +60,5 @@ crashlytics-build.properties
 
 Assets/*
 !Assets/EmoteSwitch V3
+Assets/EmoteSwitch V3/EmoteSwitchV3Editor/Animations/*
 
