@@ -6,7 +6,7 @@ using VRCSDK2;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-// ver 1.0
+// ver 1.2
 // created by gatosyocora
 
 public class EmoteSwitchV3Editor : EditorWindow {
