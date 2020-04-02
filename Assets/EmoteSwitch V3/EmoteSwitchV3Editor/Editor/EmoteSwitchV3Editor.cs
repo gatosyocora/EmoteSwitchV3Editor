@@ -75,6 +75,8 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
     private bool useIdleAnim = true;
 
+    private const string UNDO_TEXT = "SetEmoteSwitchV3 to ";
+
 
     [MenuItem("EmoteSwitch/EmoteSwitchV3 Editor")]
     private static void Create()
@@ -245,10 +247,11 @@ public class EmoteSwitchV3Editor : EditorWindow {
         }
         EditorGUI.EndDisabledGroup();
 
+        using (new EditorGUI.DisabledGroupScope(!Undo.GetCurrentGroupName().StartsWith(UNDO_TEXT)))
         using (new EditorGUILayout.HorizontalScope())
         {
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("Undo before set Emote switch"))
+            if (GUILayout.Button("Undo before Set EmoteSwitch"))
             {
                 Undo.PerformUndo();
             }
@@ -262,7 +265,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
     /// <param name="props"></param>
     private void SetEmoteSwitchV3(GameObject avatarObj, List<GameObject> props)
     {
-        Undo.RegisterCompleteObjectUndo(avatarObj, "SetEmoteSwitchV3 to " + avatarObj.name);
+        Undo.RegisterCompleteObjectUndo(avatarObj, UNDO_TEXT + avatarObj.name);
 
         AnimationClip emoteOnAnimClip = null, emoteOffAnimClip = null;
         float emoteAnimTime = 0f;
@@ -344,6 +347,8 @@ public class EmoteSwitchV3Editor : EditorWindow {
         // EmoteAnimationを設定する
         standingAnimController[EMOTE_NAMES[(int)selectedOnOffEmote * 2]] = emoteOnAnimClip;
         standingAnimController[EMOTE_NAMES[(int)selectedOnOffEmote * 2 + 1]] = emoteOffAnimClip;
+
+        Undo.SetCurrentGroupName(UNDO_TEXT + avatarObj.name);
     }
 
     /// <summary>
