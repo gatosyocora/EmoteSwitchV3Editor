@@ -257,7 +257,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
             {
                 EditorGUI.indentLevel++;
                 useIdleAnim = EditorGUILayout.Toggle("Use IDLE Animation", useIdleAnim);
-                useLocal = EditorGUILayout.Toggle("Local EmoteSwitch", useLocal);
+                useLocal = EditorGUILayout.Toggle("Use Local EmoteSwitch", useLocal);
                 EditorGUI.indentLevel--;
             }
 
