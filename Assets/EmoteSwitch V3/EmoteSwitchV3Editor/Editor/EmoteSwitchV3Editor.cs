@@ -278,7 +278,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
         using (new EditorGUILayout.HorizontalScope())
         {
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("Undo before Set EmoteSwitch"))
+            if (GUILayout.Button("Rever before Set EmoteSwitch"))
             {
                 Undo.PerformUndo();
             }
