@@ -104,17 +104,17 @@ public class EmoteSwitchV3Editor : EditorWindow {
     {
         EditorGUI.BeginChangeCheck();
         {
-            targetObject = EditorGUILayout.ObjectField(
+            m_avatar = EditorGUILayout.ObjectField(
                 "Avatar",
-                targetObject,
-                typeof(GameObject),
+                m_avatar,
+                typeof(VRC_AvatarDescriptor),
                 true
-            ) as GameObject;
+            ) as VRC_AvatarDescriptor;
         }
         if (EditorGUI.EndChangeCheck())
         {
-            isSettingAvatar = (targetObject != null);
-            GetAvatarInfo(targetObject);
+            isSettingAvatar = (m_avatar != null);
+            GetAvatarInfo(m_avatar);
         }
 
         // VRC_AvatarDescripterが設定されていない時の例外処理
@@ -390,14 +390,13 @@ public class EmoteSwitchV3Editor : EditorWindow {
     /// <summary>
     /// アバターの情報を取得する
     /// </summary>
-    private void GetAvatarInfo(GameObject obj)
+    private void GetAvatarInfo(VRC_AvatarDescriptor avatar)
     {
-        if (obj == null) return;
+        if (avatar == null) return;
 
-        m_avatar = obj.GetComponent<VRC_AvatarDescriptor>();
-        if (m_avatar == null) return;
+        targetObject = avatar.gameObject;
 
-        standingAnimController = m_avatar.CustomStandingAnims;
+        standingAnimController = avatar.CustomStandingAnims;
     }
 
     /// <summary>
