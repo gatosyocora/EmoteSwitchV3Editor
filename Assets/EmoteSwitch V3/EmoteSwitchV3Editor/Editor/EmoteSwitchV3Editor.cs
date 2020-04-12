@@ -42,9 +42,9 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
     private const string IDLE_ANIMATION_NAME = "IDLE"; // Emoteアニメーションとして参照するアニメーションの名前
 
-    private const string LOCAL_SYSTEM_PREFAB_PATH = "/Local_System/Prefab/Local_system.prefab";
-    private const string LOCAL_ROOT_BELOW_OBJECT_NAME = "Local_On_Switch";
-    private const string OBJECT_PATH_IN_LOCAL_SYSTEM = "On_Animation_Particle/On_Object/After_On/Object";
+    private const string LOCAL_SYSTEM_PREFAB_PATH = "/Local_System/Prefab/Local_system.prefab"; // LocalSystemのPrefabのファイルパス
+    private const string LOCAL_ROOT_BELOW_OBJECT_NAME = "Local_On_Switch"; // LocalSystem内にあるアバター直下に置くオブジェクトの名前
+    private const string OBJECT_PATH_IN_LOCAL_SYSTEM = "On_Animation_Particle/On_Object/After_On/Object"; // LocalSystem内のObjectまでのパス
 
     /***** 必要に応じてここまでの値を変更する *****/
 
@@ -320,12 +320,13 @@ public class EmoteSwitchV3Editor : EditorWindow {
             emoteSwitchObj.name = "EmoteSwitch V3_" + propObj.name;
             Undo.RegisterCreatedObjectUndo(emoteSwitchObj, "Instantiate " + emoteSwitchObj.name);
             Undo.SetTransformParent(emoteSwitchObj.transform, parentTrans, emoteSwitchObj.name + " SetParent to " + parentTrans.name);
-            emoteSwitchObj.transform.SetParent(parentTrans);
 
             // 名前の重複を防ぐ
             var maxNum = GetSameNameObjectsMaxNumInBrother(emoteSwitchObj);
             if (maxNum >= 0)
-                emoteSwitchObj.name += " "+(maxNum+1);
+            {
+                emoteSwitchObj.name += " " + (maxNum + 1);
+            }
 
             // EmoteSwitchV3にpropObjを設定する
             var objectTrans = emoteSwitchObj.transform.Find(OBJECT_PATH_IN_PREFAB);
@@ -334,6 +335,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
             if (isLocal)
             {
+                // LocalSystemを設定する
                 var localSystemPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(emoteSwitchV3EditorFolderPath + LOCAL_SYSTEM_PREFAB_PATH);
                 var localSystemObj = Instantiate(localSystemPrefab, propObj.transform.position, Quaternion.identity) as GameObject;
                 localSystemObj.name = "EmoteSwitchV3_Local_" + propObj.name;
@@ -361,15 +363,22 @@ public class EmoteSwitchV3Editor : EditorWindow {
             animator.runtimeAnimatorController = controller;
             // 初期状態がActiveなら非Activeにする(propStartState==Active(true) -> TO_INACTIVE)
             if (emoteOnAnimClip == null)
-                emoteOnAnimClip = CreateEmoteAnimClip(EMOTE_ON, propObj.name, toggleObj, (propStartState)?TO_INACTIVE:TO_ACTIVE);
+            {
+                emoteOnAnimClip = CreateEmoteAnimClip(EMOTE_ON, propObj.name, toggleObj, (propStartState) ? TO_INACTIVE : TO_ACTIVE);
+            }
             else
+            {
                 AddEmoteAnimClip(ref emoteOnAnimClip, propObj.name, toggleObj, (propStartState) ? TO_INACTIVE : TO_ACTIVE, emoteAnimTime);
+            }
             // 初期状態がActiveならActiveにする(propStartState==Active(true) -> TO_ACTIVE)
             if (emoteOffAnimClip == null)
+            {
                 emoteOffAnimClip = CreateEmoteAnimClip(EMOTE_OFF, propObj.name, toggleObj, (propStartState) ? TO_ACTIVE : TO_INACTIVE);
+            }
             else
+            {
                 AddEmoteAnimClip(ref emoteOffAnimClip, propObj.name, toggleObj, (propStartState) ? TO_ACTIVE : TO_INACTIVE, emoteAnimTime);
-
+            }
         }
 
         // EmoteAnimationを設定する
