@@ -5,6 +5,7 @@ using UnityEditor;
 using VRCSDK2;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UnityEditorInternal;
 
 // ver 1.3
 // created by gatosyocora
@@ -14,6 +15,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
     private GameObject targetObject = null;
     private List<GameObject> m_props;
     private List<bool> propStartStates;
+    private List<bool> isLocal;
 
     private AnimationClip emoteAnimClip = null;
     
@@ -30,6 +32,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
     private const string OBJECT_PATH_IN_PREFAB = "Joint/Toggle1/Object"; // Prefab内のObjectまでのパス
     private const string TOOGLE1_PATH_IN_PREFAB = "Joint/Toggle1"; // Prefab内のToogle1までのパス
+    private const string JOINT_PATH_IN_PREFAB = "Joint"; // Prefab内のJointまでのパス
 
     private const string PREFAB1_PATH = "/EmoteSwitchV3Editor/EmoteSwitch V3_Editor.prefab"; // Prefabのファイルパス
 
@@ -80,7 +83,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
     private const string UNDO_TEXT = "SetEmoteSwitchV3 to ";
 
-    private bool isLocal = false;
+    private bool useLocal = false;
 
     [MenuItem("EmoteSwitch/EmoteSwitchV3 Editor")]
     private static void Create()
@@ -95,6 +98,9 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
         propStartStates = new List<bool>();
         propStartStates.Add(false);
+
+        isLocal = new List<bool>();
+        isLocal.Add(true);
 
         emoteSwitchV3EditorFolderPath = GetEmoteSwitchV3EditorFolderPath();
         idleAniamtionFbxPath = GetIdleAnimationFbxPath();
@@ -130,6 +136,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
             {
                 m_props.Add(null);
                 propStartStates.Add(false);
+                isLocal.Add(true);
             }
             if (GUILayout.Button("-"))
             {
@@ -137,10 +144,20 @@ public class EmoteSwitchV3Editor : EditorWindow {
                 {
                     m_props.RemoveAt(m_props.Count - 1);
                     propStartStates.RemoveAt(m_props.Count - 1);
+                    isLocal.RemoveAt(m_props.Count - 1);
                 }
             }
         }
-        EditorGUILayout.LabelField("Default State");
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            EditorGUILayout.LabelField("Default State");
+            GUILayout.FlexibleSpace();
+
+            if (useLocal)
+            {
+                EditorGUILayout.LabelField("Local", GUILayout.Width(35f));
+            }
+        }
         EditorGUI.indentLevel++;
         EditorGUI.BeginChangeCheck();
         {
@@ -157,6 +174,11 @@ public class EmoteSwitchV3Editor : EditorWindow {
                         typeof(GameObject),
                         true
                     ) as GameObject;
+
+                    if (useLocal)
+                    {
+                        isLocal[i] = EditorGUILayout.ToggleLeft("", isLocal[i], GUILayout.Width(30f));
+                    }
                 }
 
             }
@@ -235,7 +257,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
             {
                 EditorGUI.indentLevel++;
                 useIdleAnim = EditorGUILayout.Toggle("Use IDLE Animation", useIdleAnim);
-                isLocal = EditorGUILayout.Toggle("Local EmoteSwitch", isLocal);
+                useLocal = EditorGUILayout.Toggle("Local EmoteSwitch", useLocal);
                 EditorGUI.indentLevel--;
             }
 
@@ -332,11 +354,12 @@ public class EmoteSwitchV3Editor : EditorWindow {
             Undo.SetTransformParent(propObj.transform, objectTrans, propObj.name + " SetParent to " + objectTrans.name);
             objectTrans.gameObject.SetActive(propStartState);
 
-            if (isLocal)
+            GameObject localSystemObj = null;
+            if (useLocal && isLocal[i])
             {
                 // LocalSystemを設定する
                 var localSystemPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(emoteSwitchV3EditorFolderPath + LOCAL_SYSTEM_PREFAB_PATH);
-                var localSystemObj = Instantiate(localSystemPrefab, propObj.transform.position, Quaternion.identity) as GameObject;
+                localSystemObj = Instantiate(localSystemPrefab, propObj.transform.position, Quaternion.identity) as GameObject;
                 localSystemObj.name = "EmoteSwitchV3_Local_" + propObj.name;
                 Undo.RegisterCreatedObjectUndo(localSystemObj, "Instantiate " + localSystemObj.name);
                 Undo.SetTransformParent(localSystemObj.transform, parentTrans, localSystemObj.name + " SetParent to " + parentTrans.name);
@@ -353,6 +376,44 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
                 var objectInLocalSystemTrans = localSystemObj.transform.Find(OBJECT_PATH_IN_LOCAL_SYSTEM);
                 Undo.SetTransformParent(emoteSwitchObj.transform, objectInLocalSystemTrans, emoteSwitchObj.name + " SetParent to " + objectInLocalSystemTrans.name);
+            }
+
+            // JointやIK_Followerがついたオブジェクトを非アクティブにすると壊れるので回避
+            var joints = propObj.GetComponents<Joint>();
+            var followers = propObj.GetComponents<VRC_IKFollower>();
+            var jointTrans = emoteSwitchObj.transform.Find(JOINT_PATH_IN_PREFAB);
+
+            if (joints.Length > 0 || followers.Length > 0)
+            {
+                if (useLocal && isLocal[i])
+                {
+                    var jointObj = new GameObject("EmoteSwitchV3_Local_" + propObj.name + "_Joint");
+                    Undo.RegisterCreatedObjectUndo(jointObj, "Create " + jointObj.name);
+                    jointTrans = jointObj.transform;
+                    var localSystemParent = localSystemObj.transform.parent;
+                    jointTrans.SetPositionAndRotation(localSystemParent.position, localSystemParent.rotation);
+                    Undo.SetTransformParent(jointTrans, localSystemParent, jointTrans.name + " SetParent to " + localSystemParent.name);
+                    Undo.SetTransformParent(localSystemObj.transform, jointTrans, localSystemObj.name + " SetParent to " + jointTrans.name);
+                }
+
+                if (joints.Length > 0)
+                {
+                    var rigidBody = propObj.GetComponent<Rigidbody>();
+                    CopyComponent(jointTrans.gameObject, rigidBody);
+                    Undo.DestroyObjectImmediate(rigidBody);
+                }
+
+                foreach (var joint in joints)
+                {
+                    CopyComponent(jointTrans.gameObject, joint);
+                    Undo.DestroyObjectImmediate(joint);
+                }
+
+                foreach (var follower in followers)
+                {
+                    CopyComponent(jointTrans.gameObject, follower);
+                    Undo.DestroyObjectImmediate(follower);
+                }
             }
 
             // EmoteAnimationを作成する
@@ -690,5 +751,12 @@ public class EmoteSwitchV3Editor : EditorWindow {
     private string GetIdleAnimationFbxPath()
     {
         return GetAssetPathForSearch("Male_Standing_Pose t:Model");
+    }
+
+    // 特定のオブジェクトにコンポーネントを値ごとコピーする
+    private void CopyComponent(GameObject targetObj, Component fromComp)
+    {
+        ComponentUtility.CopyComponent(fromComp);
+        ComponentUtility.PasteComponentAsNew(targetObj);
     }
 }
