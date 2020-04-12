@@ -42,6 +42,10 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
     private const string IDLE_ANIMATION_NAME = "IDLE"; // Emoteアニメーションとして参照するアニメーションの名前
 
+    private const string LOCAL_SYSTEM_PREFAB_PATH = "/Local_System/Prefab/Local_system.prefab";
+    private const string LOCAL_ROOT_BELOW_OBJECT_NAME = "Local_On_Switch";
+    private const string OBJECT_PATH_IN_LOCAL_SYSTEM = "On_Animation_Particle/On_Object/After_On/Object";
+
     /***** 必要に応じてここまでの値を変更する *****/
 
     private string emoteSwitchV3EditorFolderPath;
@@ -327,6 +331,28 @@ public class EmoteSwitchV3Editor : EditorWindow {
             var objectTrans = emoteSwitchObj.transform.Find(OBJECT_PATH_IN_PREFAB);
             Undo.SetTransformParent(propObj.transform, objectTrans, propObj.name + " SetParent to " + objectTrans.name);
             objectTrans.gameObject.SetActive(propStartState);
+
+            if (isLocal)
+            {
+                var localSystemPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(emoteSwitchV3EditorFolderPath + LOCAL_SYSTEM_PREFAB_PATH);
+                var localSystemObj = Instantiate(localSystemPrefab, propObj.transform.position, Quaternion.identity) as GameObject;
+                localSystemObj.name = "EmoteSwitchV3_Local_" + propObj.name;
+                Undo.RegisterCreatedObjectUndo(localSystemObj, "Instantiate " + localSystemObj.name);
+                Undo.SetTransformParent(localSystemObj.transform, parentTrans, localSystemObj.name + " SetParent to " + parentTrans.name);
+
+                if (PrefabUtility.IsPartOfPrefabInstance(localSystemObj))
+                {
+                    PrefabUtility.UnpackPrefabInstance(localSystemObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+                }
+                var localOnSwitchTrans = localSystemObj.transform.Find(LOCAL_ROOT_BELOW_OBJECT_NAME);
+                Undo.SetTransformParent(localOnSwitchTrans, avatarObj.transform, localOnSwitchTrans.name + " SetParent to " + avatarObj.name);
+                localOnSwitchTrans.localPosition = Vector3.zero;
+                localOnSwitchTrans.localRotation = Quaternion.identity;
+                localOnSwitchTrans.localScale = Vector3.one;
+
+                var objectInLocalSystemTrans = localSystemObj.transform.Find(OBJECT_PATH_IN_LOCAL_SYSTEM);
+                Undo.SetTransformParent(emoteSwitchObj.transform, objectInLocalSystemTrans, emoteSwitchObj.name + " SetParent to " + objectInLocalSystemTrans.name);
+            }
 
             // EmoteAnimationを作成する
             var toggleObj = emoteSwitchObj.transform.Find(TOOGLE1_PATH_IN_PREFAB).gameObject;
