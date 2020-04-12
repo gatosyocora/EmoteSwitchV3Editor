@@ -381,6 +381,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
         }
 
         // EmoteAnimationを設定する
+        Undo.RecordObject(standingAnimController, "Set Animation For EmoteSwitch to Controller");
         standingAnimController[EMOTE_NAMES[(int)selectedOnOffEmote * 2]] = emoteOnAnimClip;
         standingAnimController[EMOTE_NAMES[(int)selectedOnOffEmote * 2 + 1]] = emoteOffAnimClip;
 
