@@ -77,6 +77,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
     private const string UNDO_TEXT = "SetEmoteSwitchV3 to ";
 
+    private bool isLocal = false;
 
     [MenuItem("EmoteSwitch/EmoteSwitchV3 Editor")]
     private static void Create()
@@ -231,6 +232,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
             {
                 EditorGUI.indentLevel++;
                 useIdleAnim = EditorGUILayout.Toggle("Use IDLE Animation", useIdleAnim);
+                isLocal = EditorGUILayout.Toggle("Local EmoteSwitch", isLocal);
                 EditorGUI.indentLevel--;
             }
 
