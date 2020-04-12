@@ -53,7 +53,6 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
     private VRC_AvatarDescriptor m_avatar = null;
     private AnimatorOverrideController standingAnimController = null;
-    private AnimatorOverrideController sittingAnimController = null;
 
     private readonly string[] EMOTE_NAMES = { "EMOTE1", "EMOTE2", "EMOTE3", "EMOTE4", "EMOTE5", "EMOTE6", "EMOTE7", "EMOTE8" };
 
@@ -368,7 +367,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
             }
             else
             {
-                AddEmoteAnimClip(ref emoteOnAnimClip, propObj.name, toggleObj, (propStartState) ? TO_INACTIVE : TO_ACTIVE, emoteAnimTime);
+                AddEmoteAnimClip(ref emoteOnAnimClip, toggleObj, (propStartState) ? TO_INACTIVE : TO_ACTIVE, emoteAnimTime);
             }
             // 初期状態がActiveならActiveにする(propStartState==Active(true) -> TO_ACTIVE)
             if (emoteOffAnimClip == null)
@@ -377,7 +376,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
             }
             else
             {
-                AddEmoteAnimClip(ref emoteOffAnimClip, propObj.name, toggleObj, (propStartState) ? TO_ACTIVE : TO_INACTIVE, emoteAnimTime);
+                AddEmoteAnimClip(ref emoteOffAnimClip, toggleObj, (propStartState) ? TO_ACTIVE : TO_INACTIVE, emoteAnimTime);
             }
         }
 
@@ -399,7 +398,6 @@ public class EmoteSwitchV3Editor : EditorWindow {
         if (m_avatar == null) return;
 
         standingAnimController = m_avatar.CustomStandingAnims;
-        sittingAnimController = m_avatar.CustomSittingAnims;
     }
 
     /// <summary>
@@ -412,8 +410,12 @@ public class EmoteSwitchV3Editor : EditorWindow {
         if (props == null) return false;
 
         for (int i = 0; i < props.Count; i++)
+        {
             if (props[i] != null)
-               return true;
+            {
+                return true;
+            }
+        }
 
         return false;
     }
@@ -473,7 +475,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
     /// <param name="propName"></param>
     /// <param name="targetObj"></param>
     /// <param name="emoteType"></param>
-    private void AddEmoteAnimClip(ref AnimationClip animClip, string propName, GameObject targetObj, int emoteType, float offsetTime)
+    private void AddEmoteAnimClip(ref AnimationClip animClip, GameObject targetObj, int emoteType, float offsetTime)
     {
 
         string path = GetHierarchyPath(targetObj);
