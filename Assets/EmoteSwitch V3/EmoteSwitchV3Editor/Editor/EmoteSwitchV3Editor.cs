@@ -11,7 +11,8 @@ using System.IO;
 // ver 1.3
 // created by gatosyocora
 
-public class EmoteSwitchV3Editor : EditorWindow {
+public class EmoteSwitchV3Editor : EditorWindow
+{
 
     private GameObject targetObject = null;
     private List<GameObject> m_props;
@@ -19,7 +20,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
     private List<bool> isLocal;
 
     private AnimationClip emoteAnimClip = null;
-    
+
     private bool isSettingAvatar = false;
     private bool isSettingProp = false;
 
@@ -101,14 +102,20 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
     private void OnEnable()
     {
-        m_props = new List<GameObject>();
-        m_props.Add(null);
+        m_props = new List<GameObject>
+        {
+            null
+        };
 
-        propStartStates = new List<bool>();
-        propStartStates.Add(false);
+        propStartStates = new List<bool>
+        {
+            false
+        };
 
-        isLocal = new List<bool>();
-        isLocal.Add(true);
+        isLocal = new List<bool>
+        {
+            true
+        };
 
         emoteSwitchV3EditorFolderPath = GetEmoteSwitchV3EditorFolderPath();
         idleAniamtionFbxPath = GetIdleAnimationFbxPath();
@@ -295,7 +302,8 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
         EditorGUI.BeginDisabledGroup(!(isSettingAvatar && isSettingProp && (standingAnimController != null) && (m_avatar != null)));
         {
-            using (new EditorGUILayout.HorizontalScope()) {
+            using (new EditorGUILayout.HorizontalScope())
+            {
                 if (GUILayout.Button("Set EmoteSwitch"))
                 {
                     SetEmoteSwitchV3(targetObject, m_props, savedFolderPath);
@@ -556,7 +564,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
             // AnimationClipにキーリダクションを行ったAnimationCurveを設定
             AnimationUtility.SetEditorCurve(animClip, binding, curve);
         }
-        
+
         return animClip;
     }
 
@@ -607,7 +615,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
                 // Offset分だけずらす
                 var keysNum = curve.keys.Length;
                 int index = 0;
-                for (int j = keysNum-1; j >= 0; j--)
+                for (int j = keysNum - 1; j >= 0; j--)
                 {
                     var key = curve.keys[j];
                     key.time += diffTime;
@@ -718,7 +726,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
         CreateNoExistFolders(savedFilePath);
 
-        AssetDatabase.CreateAsset(animClip, 
+        AssetDatabase.CreateAsset(animClip,
             AssetDatabase.GenerateUniqueAssetPath(savedFilePath));
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -733,7 +741,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
     /// <returns></returns>
     private int GetSameNameObjectsMaxNumInBrother(GameObject obj)
     {
-        var pattern = @"^"+obj.name+" ?[0-9]*";
+        var pattern = @"^" + obj.name + " ?[0-9]*";
         var parentTrans = obj.transform.parent;
         var brotherTrans = parentTrans.gameObject.transform;
 
@@ -800,10 +808,10 @@ public class EmoteSwitchV3Editor : EditorWindow {
     /// <returns></returns>
     private string GetSavedFolderPath(AnimatorOverrideController controller)
     {
-        if (controller == null) return "Assets/"+EMOTE_SWITCH_SAVED_FOLDER+"/";
+        if (controller == null) return "Assets/" + EMOTE_SWITCH_SAVED_FOLDER + "/";
 
         var filePath = AssetDatabase.GetAssetPath(controller);
-        return Path.GetDirectoryName(filePath).Replace('\\', '/') + "/"+EMOTE_SWITCH_SAVED_FOLDER+"/";
+        return Path.GetDirectoryName(filePath).Replace('\\', '/') + "/" + EMOTE_SWITCH_SAVED_FOLDER + "/";
     }
 
     /// <summary>
