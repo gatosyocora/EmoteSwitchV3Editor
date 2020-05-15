@@ -23,11 +23,15 @@ public class EmoteSwitchV3Editor : EditorWindow {
     private bool isSettingAvatar = false;
     private bool isSettingProp = false;
 
-    private const int EMOTE_ON = 0;
-    private const int EMOTE_OFF = 1;
+    private enum EMOTE_TYPE
+    {
+        ON, OFF
+    }
 
-    private const int TO_ACTIVE = 1;
-    private const int TO_INACTIVE = 0;
+    private enum TO_STATE
+    {
+        ACTIVE, INACTIVE
+    }
 
     /***** 必要に応じてここからの値を変更する *****/
 
@@ -337,8 +341,8 @@ public class EmoteSwitchV3Editor : EditorWindow {
             }
 
             var savedFilePath = savedFolderPath + objName;
-            emoteOnAnimClip = CreateAnimationClip(savedFilePath, EMOTE_ON);
-            emoteOffAnimClip = CreateAnimationClip(savedFilePath, EMOTE_OFF);
+            emoteOnAnimClip = CreateAnimationClip(savedFilePath, EMOTE_TYPE.ON);
+            emoteOffAnimClip = CreateAnimationClip(savedFilePath, EMOTE_TYPE.OFF);
             CopyAnimationKeys(emoteAnimClip, emoteOnAnimClip);
             CopyAnimationKeys(emoteAnimClip, emoteOffAnimClip);
 
@@ -451,20 +455,20 @@ public class EmoteSwitchV3Editor : EditorWindow {
             // 初期状態がActiveなら非Activeにする(propStartState==Active(true) -> TO_INACTIVE)
             if (emoteOnAnimClip == null)
             {
-                emoteOnAnimClip = CreateEmoteAnimClip(EMOTE_ON, savedFolderPath + propObj.name, toggleObj, (propStartState) ? TO_INACTIVE : TO_ACTIVE);
+                emoteOnAnimClip = CreateEmoteAnimClip(EMOTE_TYPE.ON, savedFolderPath + propObj.name, toggleObj, (propStartState) ? TO_STATE.INACTIVE : TO_STATE.ACTIVE);
             }
             else
             {
-                AddEmoteAnimClip(ref emoteOnAnimClip, toggleObj, (propStartState) ? TO_INACTIVE : TO_ACTIVE, emoteAnimTime);
+                AddEmoteAnimClip(ref emoteOnAnimClip, toggleObj, (propStartState) ? TO_STATE.INACTIVE : TO_STATE.ACTIVE, emoteAnimTime);
             }
             // 初期状態がActiveならActiveにする(propStartState==Active(true) -> TO_ACTIVE)
             if (emoteOffAnimClip == null)
             {
-                emoteOffAnimClip = CreateEmoteAnimClip(EMOTE_OFF, savedFolderPath + propObj.name, toggleObj, (propStartState) ? TO_ACTIVE : TO_INACTIVE);
+                emoteOffAnimClip = CreateEmoteAnimClip(EMOTE_TYPE.OFF, savedFolderPath + propObj.name, toggleObj, (propStartState) ? TO_STATE.ACTIVE : TO_STATE.INACTIVE);
             }
             else
             {
-                AddEmoteAnimClip(ref emoteOffAnimClip, toggleObj, (propStartState) ? TO_ACTIVE : TO_INACTIVE, emoteAnimTime);
+                AddEmoteAnimClip(ref emoteOffAnimClip, toggleObj, (propStartState) ? TO_STATE.ACTIVE : TO_STATE.INACTIVE, emoteAnimTime);
             }
         }
 
@@ -516,9 +520,9 @@ public class EmoteSwitchV3Editor : EditorWindow {
     /// <param name="targetObj">Emoteで操作するオブジェクト(Toggle1)</param>
     /// <param name="emoteType">EmoteAnimationでON状態にするのかOFF状態にするのか</param>
     /// <returns></returns>
-    private AnimationClip CreateEmoteAnimClip(int fileType, string savedFilePath, GameObject targetObj, int emoteType)
+    private AnimationClip CreateEmoteAnimClip(EMOTE_TYPE type, string savedFilePath, GameObject targetObj, TO_STATE emoteType)
     {
-        var animClip = CreateAnimationClip(savedFilePath, fileType);
+        var animClip = CreateAnimationClip(savedFilePath, type);
 
         if (useIdleAnim)
         {
@@ -529,7 +533,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
         string path = GetHierarchyPath(targetObj);
 
         string animFilePath = emoteSwitchV3EditorFolderPath;
-        if (emoteType == TO_INACTIVE)
+        if (emoteType == TO_STATE.INACTIVE)
         {
             animFilePath += EMOTE_OFF_ANIMFILE_PATH;
         }
@@ -563,13 +567,13 @@ public class EmoteSwitchV3Editor : EditorWindow {
     /// <param name="propName"></param>
     /// <param name="targetObj"></param>
     /// <param name="emoteType"></param>
-    private void AddEmoteAnimClip(ref AnimationClip animClip, GameObject targetObj, int emoteType, float offsetTime)
+    private void AddEmoteAnimClip(ref AnimationClip animClip, GameObject targetObj, TO_STATE emoteType, float offsetTime)
     {
 
         string path = GetHierarchyPath(targetObj);
 
         string animFilePath = emoteSwitchV3EditorFolderPath;
-        if (emoteType == TO_INACTIVE)
+        if (emoteType == TO_STATE.INACTIVE)
         {
             animFilePath += EMOTE_OFF_ANIMFILE_PATH;
         }
@@ -706,11 +710,11 @@ public class EmoteSwitchV3Editor : EditorWindow {
     /// <param name="objName"></param>
     /// <param name="fileType"></param>
     /// <returns></returns>
-    private AnimationClip CreateAnimationClip(string savedFilePath, int fileType)
+    private AnimationClip CreateAnimationClip(string savedFilePath, EMOTE_TYPE type)
     {
         AnimationClip animClip = new AnimationClip();
 
-        savedFilePath += ((fileType == EMOTE_ON) ? "_ON" : "_OFF") + ".anim";
+        savedFilePath += ((type == EMOTE_TYPE.ON) ? "_ON" : "_OFF") + ".anim";
 
         CreateNoExistFolders(savedFilePath);
 
