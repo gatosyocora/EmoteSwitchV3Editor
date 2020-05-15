@@ -32,8 +32,6 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         private GameObject targetObject = null;
         private List<Prop> propList;
 
-        private AnimationClip emoteAnimClip = null;
-
         private enum EMOTE_TYPE
         {
             ON, OFF
@@ -313,36 +311,15 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <summary>
         /// EmoteSwitchを作成する
         /// </summary>
-        /// <param name="avatarObj"></param>
-        /// <param name="props"></param>
+        /// <param name="avatarObj">アバターのルートオブジェクト</param>
+        /// <param name="propList">EmoteSwitchで追加するオブジェクトのリスト</param>
+        /// <param name="savedFolderPath">EmoteSwitchV3で作成するAnimationClipを保存するフォルダパス</param>
         private void SetEmoteSwitchV3(GameObject avatarObj, List<Prop> propList, string savedFolderPath)
         {
             Undo.RegisterCompleteObjectUndo(avatarObj, UNDO_TEXT + avatarObj.name);
 
             AnimationClip emoteOnAnimClip = null, emoteOffAnimClip = null;
             float emoteAnimTime = 0f;
-
-            if (emoteAnimClip != null)
-            {
-                var objName = avatarObj.name;
-
-                foreach (var prop in propList)
-                {
-                    if (prop != null)
-                    {
-                        objName = prop.obj.name;
-                        break;
-                    }
-                }
-
-                var savedFilePath = savedFolderPath + objName;
-                emoteOnAnimClip = CreateAnimationClip(savedFilePath, EMOTE_TYPE.ON);
-                emoteOffAnimClip = CreateAnimationClip(savedFilePath, EMOTE_TYPE.OFF);
-                CopyAnimationKeys(emoteAnimClip, emoteOnAnimClip);
-                CopyAnimationKeys(emoteAnimClip, emoteOffAnimClip);
-
-                emoteAnimTime = GetAnimationTime(emoteAnimClip);
-            }
 
             // PrefabのInstanceに対してSetParentする場合はUnpackする必要がある
             // 2018からのPrefabシステムからSetParent時に自動的にUnPackしなくなった
