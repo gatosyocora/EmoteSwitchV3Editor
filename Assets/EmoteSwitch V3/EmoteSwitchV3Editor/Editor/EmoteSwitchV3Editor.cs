@@ -36,22 +36,22 @@ public class EmoteSwitchV3Editor : EditorWindow
 
     /***** 必要に応じてここからの値を変更する *****/
 
-    private const string OBJECT_PATH_IN_PREFAB = "Joint/Toggle1/Object"; // Prefab内のObjectまでのパス
-    private const string TOOGLE1_PATH_IN_PREFAB = "Joint/Toggle1"; // Prefab内のToogle1までのパス
-    private const string JOINT_PATH_IN_PREFAB = "Joint"; // Prefab内のJointまでのパス
+    private static readonly string OBJECT_PATH_IN_PREFAB = "Joint/Toggle1/Object"; // Prefab内のObjectまでのパス
+    private static readonly string TOOGLE1_PATH_IN_PREFAB = "Joint/Toggle1"; // Prefab内のToogle1までのパス
+    private static readonly string JOINT_PATH_IN_PREFAB = "Joint"; // Prefab内のJointまでのパス
 
-    private const string PREFAB1_PATH = "/EmoteSwitchV3Editor/EmoteSwitch V3_Editor.prefab"; // Prefabのファイルパス
+    private static readonly string PREFAB1_PATH = "/EmoteSwitchV3Editor/EmoteSwitch V3_Editor.prefab"; // Prefabのファイルパス
 
-    private const string EMOTE_OFF_ANIMFILE_PATH = "/V3 Prefab/Emote_OFF/[1]Emote_OFF.anim"; // OFFにするキーが入ったコピー元のAnimationファイルのパス
-    private const string EMOTE_ON_ANIMFILE_PATH = "/V3 Prefab/Emote_ON/[1]Emote_ON.anim"; // ONにするキーが入ったコピー元のAnimationファイルのパス
+    private static readonly string EMOTE_OFF_ANIMFILE_PATH = "/V3 Prefab/Emote_OFF/[1]Emote_OFF.anim"; // OFFにするキーが入ったコピー元のAnimationファイルのパス
+    private static readonly string EMOTE_ON_ANIMFILE_PATH = "/V3 Prefab/Emote_ON/[1]Emote_ON.anim"; // ONにするキーが入ったコピー元のAnimationファイルのパス
 
-    private const string EMOTESWITCH_CONTROLLER_PATH = "/ToggleSwitch/Switch.controller"; // Toggle1のAnimatorに設定するAnimatorControllerまでのパス
+    private static readonly string EMOTESWITCH_CONTROLLER_PATH = "/ToggleSwitch/Switch.controller"; // Toggle1のAnimatorに設定するAnimatorControllerまでのパス
 
-    private const string IDLE_ANIMATION_NAME = "IDLE"; // Emoteアニメーションとして参照するアニメーションの名前
+    private static readonly string IDLE_ANIMATION_NAME = "IDLE"; // Emoteアニメーションとして参照するアニメーションの名前
 
-    private const string LOCAL_SYSTEM_PREFAB_PATH = "/Local_System/Prefab/Local_system.prefab"; // LocalSystemのPrefabのファイルパス
-    private const string LOCAL_ROOT_BELOW_OBJECT_NAME = "Local_On_Switch"; // LocalSystem内にあるアバター直下に置くオブジェクトの名前
-    private const string OBJECT_PATH_IN_LOCAL_SYSTEM = "On_Animation_Particle/On_Object/After_On/Object"; // LocalSystem内のObjectまでのパス
+    private static readonly string LOCAL_SYSTEM_PREFAB_PATH = "/Local_System/Prefab/Local_system.prefab"; // LocalSystemのPrefabのファイルパス
+    private static readonly string LOCAL_ROOT_BELOW_OBJECT_NAME = "Local_On_Switch"; // LocalSystem内にあるアバター直下に置くオブジェクトの名前
+    private static readonly string OBJECT_PATH_IN_LOCAL_SYSTEM = "On_Animation_Particle/On_Object/After_On/Object"; // LocalSystem内のObjectまでのパス
 
     /***** 必要に応じてここまでの値を変更する *****/
 
@@ -85,14 +85,14 @@ public class EmoteSwitchV3Editor : EditorWindow
 
     private bool useIdleAnim = true;
 
-    private const string UNDO_TEXT = "SetEmoteSwitchV3 to ";
+    private static readonly string UNDO_TEXT = "SetEmoteSwitchV3 to ";
 
     private bool useLocal = false;
 
     private string savedFolderPath;
 
-    private const char BSLASH = '\\';
-    private const string EMOTE_SWITCH_SAVED_FOLDER = "ESV3Animation";
+    private static readonly char BSLASH = '\\';
+    private static readonly string EMOTE_SWITCH_SAVED_FOLDER = "ESV3Animation";
 
     [MenuItem("EmoteSwitch/EmoteSwitchV3 Editor")]
     private static void Create()
