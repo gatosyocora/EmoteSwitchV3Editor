@@ -288,7 +288,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 }
             }
 
-            using (new EditorGUI.DisabledGroupScope(avatar == null || standingAnimController == null || !CheckSettingProp(propList.Select(x => x.obj).ToList())))
+            using (new EditorGUI.DisabledGroupScope(avatar == null || standingAnimController == null || !CheckSettingProp(propList)))
             using (new EditorGUILayout.HorizontalScope())
             {
                 if (GUILayout.Button("Set EmoteSwitch"))
@@ -486,19 +486,10 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// </summary>
         /// <param name="props"></param>
         /// <returns></returns>
-        private bool CheckSettingProp(List<GameObject> props)
+        private bool CheckSettingProp(List<Prop> propList)
         {
-            if (props == null) return false;
-
-            for (int i = 0; i < props.Count; i++)
-            {
-                if (props[i] != null)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            if (propList == null) return false;
+            return propList.Any(x => x.obj != null);
         }
 
         /// <summary>
