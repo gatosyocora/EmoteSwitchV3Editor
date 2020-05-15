@@ -15,7 +15,7 @@ public class EmoteSwitchV3Editor : EditorWindow
 {
 
     private GameObject targetObject = null;
-    private List<GameObject> m_props;
+    private List<GameObject> props;
     private List<bool> propStartStates;
     private List<bool> isLocal;
 
@@ -55,7 +55,7 @@ public class EmoteSwitchV3Editor : EditorWindow
     private string emoteSwitchV3EditorFolderPath;
     private string idleAniamtionFbxPath;
 
-    private VRC_AvatarDescriptor m_avatar = null;
+    private VRC_AvatarDescriptor avatar = null;
     private AnimatorOverrideController standingAnimController = null;
 
     private readonly string[] EMOTE_NAMES = { "EMOTE1", "EMOTE2", "EMOTE3", "EMOTE4", "EMOTE5", "EMOTE6", "EMOTE7", "EMOTE8" };
@@ -99,7 +99,7 @@ public class EmoteSwitchV3Editor : EditorWindow
 
     private void OnEnable()
     {
-        m_props = new List<GameObject>
+        props = new List<GameObject>
         {
             null
         };
@@ -122,22 +122,22 @@ public class EmoteSwitchV3Editor : EditorWindow
     {
         using (var check = new EditorGUI.ChangeCheckScope())
         {
-            m_avatar = EditorGUILayout.ObjectField(
+            avatar = EditorGUILayout.ObjectField(
                 "Avatar",
-                m_avatar,
+                avatar,
                 typeof(VRC_AvatarDescriptor),
                 true
             ) as VRC_AvatarDescriptor;
 
-            if (check.changed && m_avatar != null)
+            if (check.changed && avatar != null)
             {
-                GetAvatarInfo(m_avatar);
-                savedFolderPath = GetSavedFolderPath(m_avatar.CustomStandingAnims);
+                GetAvatarInfo(avatar);
+                savedFolderPath = GetSavedFolderPath(avatar.CustomStandingAnims);
             }
         }
 
         // VRC_AvatarDescripterが設定されていない時の例外処理
-        if (targetObject != null && m_avatar == null)
+        if (targetObject != null && avatar == null)
             EditorGUILayout.HelpBox("Set VRC_AvatarDescripter to Avatar object", MessageType.Warning);
 
         // Props
@@ -147,17 +147,17 @@ public class EmoteSwitchV3Editor : EditorWindow
             EditorGUILayout.LabelField("Prop Objects", EditorStyles.boldLabel);
             if (GUILayout.Button("+"))
             {
-                m_props.Add(null);
+                props.Add(null);
                 propStartStates.Add(false);
                 isLocal.Add(true);
             }
             if (GUILayout.Button("-"))
             {
-                if (m_props.Count > 1)
+                if (props.Count > 1)
                 {
-                    m_props.RemoveAt(m_props.Count - 1);
-                    propStartStates.RemoveAt(m_props.Count - 1);
-                    isLocal.RemoveAt(m_props.Count - 1);
+                    props.RemoveAt(props.Count - 1);
+                    propStartStates.RemoveAt(props.Count - 1);
+                    isLocal.RemoveAt(props.Count - 1);
                 }
             }
         }
@@ -174,16 +174,16 @@ public class EmoteSwitchV3Editor : EditorWindow
 
         using (new EditorGUI.IndentLevelScope())
         {
-            for (int i = 0; i < m_props.Count; i++)
+            for (int i = 0; i < props.Count; i++)
             {
 
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     propStartStates[i] = EditorGUILayout.Toggle(propStartStates[i], GUILayout.MinWidth(30), GUILayout.MaxWidth(30));
 
-                    m_props[i] = EditorGUILayout.ObjectField(
+                    props[i] = EditorGUILayout.ObjectField(
                         "Prop " + (i + 1),
-                        m_props[i],
+                        props[i],
                         typeof(GameObject),
                         true
                     ) as GameObject;
@@ -216,12 +216,12 @@ public class EmoteSwitchV3Editor : EditorWindow
 
                 if (check.changed)
                 {
-                    m_avatar.CustomStandingAnims = standingAnimController;
+                    avatar.CustomStandingAnims = standingAnimController;
                 }
             }
 
             // CustomStandingAnimsが設定されていない時の例外処理
-            if (targetObject != null && m_avatar != null && standingAnimController == null)
+            if (targetObject != null && avatar != null && standingAnimController == null)
             {
                 EditorGUILayout.HelpBox("Set Custom Standing Anims in VRC_AvatarDescripter", MessageType.Warning);
             }
@@ -271,9 +271,9 @@ public class EmoteSwitchV3Editor : EditorWindow
             {
                 savedFolderPath = EditorUtility.OpenFolderPanel("Select saved folder", "Assets/", string.Empty);
                 savedFolderPath = FileUtil.GetProjectRelativePath(savedFolderPath) + "/";
-                if (savedFolderPath == "/" && m_avatar != null)
+                if (savedFolderPath == "/" && avatar != null)
                 {
-                    savedFolderPath = GetSavedFolderPath(m_avatar.CustomStandingAnims);
+                    savedFolderPath = GetSavedFolderPath(avatar.CustomStandingAnims);
                 }
                 else if (savedFolderPath == "/")
                 {
@@ -292,12 +292,12 @@ public class EmoteSwitchV3Editor : EditorWindow
             }
         }
 
-        using (new EditorGUI.DisabledGroupScope(m_avatar == null || standingAnimController == null || !CheckSettingProp(m_props)))
+        using (new EditorGUI.DisabledGroupScope(avatar == null || standingAnimController == null || !CheckSettingProp(props)))
         using (new EditorGUILayout.HorizontalScope())
         {
             if (GUILayout.Button("Set EmoteSwitch"))
             {
-                SetEmoteSwitchV3(targetObject, m_props, savedFolderPath);
+                SetEmoteSwitchV3(targetObject, props, savedFolderPath);
             }
         }
 
