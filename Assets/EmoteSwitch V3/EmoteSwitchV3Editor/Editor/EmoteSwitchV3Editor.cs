@@ -449,20 +449,38 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 // 初期状態がActiveなら非Activeにする(propStartState==Active(true) -> TO_INACTIVE)
                 if (emoteOnAnimClip == null)
                 {
-                    emoteOnAnimClip = CreateEmoteAnimClip(EMOTE_TYPE.ON, savedFolderPath + propObj.name, toggleObj, (propDefaultState) ? TO_STATE.INACTIVE : TO_STATE.ACTIVE);
+                    emoteOnAnimClip = CreateEmoteAnimClip(
+                                            EMOTE_TYPE.ON, 
+                                            savedFolderPath + propObj.name, 
+                                            toggleObj.transform, 
+                                            avatar.transform, 
+                                            (propDefaultState) ? TO_STATE.INACTIVE : TO_STATE.ACTIVE);
                 }
                 else
                 {
-                    AddEmoteAnimClip(ref emoteOnAnimClip, toggleObj, (propDefaultState) ? TO_STATE.INACTIVE : TO_STATE.ACTIVE, emoteAnimTime);
+                    AddEmoteAnimClip(ref emoteOnAnimClip, 
+                                        toggleObj.transform, 
+                                        avatar.transform, 
+                                        (propDefaultState) ? TO_STATE.INACTIVE : TO_STATE.ACTIVE, 
+                                        emoteAnimTime);
                 }
                 // 初期状態がActiveならActiveにする(propStartState==Active(true) -> TO_ACTIVE)
                 if (emoteOffAnimClip == null)
                 {
-                    emoteOffAnimClip = CreateEmoteAnimClip(EMOTE_TYPE.OFF, savedFolderPath + propObj.name, toggleObj, (propDefaultState) ? TO_STATE.ACTIVE : TO_STATE.INACTIVE);
+                    emoteOffAnimClip = CreateEmoteAnimClip(
+                                            EMOTE_TYPE.OFF, 
+                                            savedFolderPath + propObj.name, 
+                                            toggleObj.transform, 
+                                            avatar.transform, 
+                                            (propDefaultState) ? TO_STATE.ACTIVE : TO_STATE.INACTIVE);
                 }
                 else
                 {
-                    AddEmoteAnimClip(ref emoteOffAnimClip, toggleObj, (propDefaultState) ? TO_STATE.ACTIVE : TO_STATE.INACTIVE, emoteAnimTime);
+                    AddEmoteAnimClip(ref emoteOffAnimClip, 
+                                        toggleObj.transform, 
+                                        avatar.transform, 
+                                        (propDefaultState) ? TO_STATE.ACTIVE : TO_STATE.INACTIVE, 
+                                        emoteAnimTime);
                 }
             }
 
@@ -514,7 +532,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <param name="targetObj">Emoteで操作するオブジェクト(Toggle1)</param>
         /// <param name="emoteType">EmoteAnimationでON状態にするのかOFF状態にするのか</param>
         /// <returns></returns>
-        private AnimationClip CreateEmoteAnimClip(EMOTE_TYPE type, string savedFilePath, GameObject targetObj, TO_STATE emoteType)
+        private AnimationClip CreateEmoteAnimClip(EMOTE_TYPE type, string savedFilePath, Transform targetTrans, Transform rootTrans, TO_STATE emoteType)
         {
             var animClip = CreateAnimationClip(savedFilePath, type);
 
@@ -524,7 +542,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 CopyAnimationKeys(idleAnimClip, animClip);
             }
 
-            string path = GetHierarchyPath(targetObj);
+            string path = AnimationUtility.CalculateTransformPath(targetTrans, rootTrans);
 
             string animFilePath = emoteSwitchV3EditorFolderPath;
             if (emoteType == TO_STATE.INACTIVE)
@@ -561,10 +579,9 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <param name="propName"></param>
         /// <param name="targetObj"></param>
         /// <param name="emoteType"></param>
-        private void AddEmoteAnimClip(ref AnimationClip animClip, GameObject targetObj, TO_STATE emoteType, float offsetTime)
+        private void AddEmoteAnimClip(ref AnimationClip animClip, Transform targetTrans, Transform rootTrans, TO_STATE emoteType, float offsetTime)
         {
-
-            string path = GetHierarchyPath(targetObj);
+            string path = AnimationUtility.CalculateTransformPath(targetTrans, rootTrans);
 
             string animFilePath = emoteSwitchV3EditorFolderPath;
             if (emoteType == TO_STATE.INACTIVE)
@@ -637,25 +654,6 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 // AnimationClipにキーリダクションを行ったAnimationCurveを設定
                 AnimationUtility.SetEditorCurve(targetClip, binding, curve);
             }
-        }
-
-        /// <summary>
-        /// 特定のオブジェクトまでのパスを取得する
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public string GetHierarchyPath(GameObject obj)
-        {
-            string path = obj.name;
-            Transform parent = obj.transform.parent;
-            while (parent != null)
-            {
-                if (parent.parent == null) return path;
-
-                path = parent.name + "/" + path;
-                parent = parent.parent;
-            }
-            return path;
         }
 
         /// <summary>
