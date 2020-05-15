@@ -6,6 +6,7 @@ using VRCSDK2;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEditorInternal;
+using System.IO;
 
 // ver 1.3
 // created by gatosyocora
@@ -40,8 +41,6 @@ public class EmoteSwitchV3Editor : EditorWindow {
     private const string EMOTE_ON_ANIMFILE_PATH = "/V3 Prefab/Emote_ON/[1]Emote_ON.anim"; // ONにするキーが入ったコピー元のAnimationファイルのパス
 
     private const string EMOTESWITCH_CONTROLLER_PATH = "/ToggleSwitch/Switch.controller"; // Toggle1のAnimatorに設定するAnimatorControllerまでのパス
-
-    private const string SAVE_FOLDER_PATH = "/EmoteSwitchV3Editor/Animations/"; // 生成されるAnimationファイルが保存されるフォルダ
 
     private const string IDLE_ANIMATION_NAME = "IDLE"; // Emoteアニメーションとして参照するアニメーションの名前
 
@@ -85,6 +84,11 @@ public class EmoteSwitchV3Editor : EditorWindow {
 
     private bool useLocal = false;
 
+    private string savedFolderPath;
+
+    private const char BSLASH = '\\';
+    private const string EMOTE_SWITCH_SAVED_FOLDER = "ESV3Animation";
+
     [MenuItem("EmoteSwitch/EmoteSwitchV3 Editor")]
     private static void Create()
     {
@@ -121,6 +125,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
         {
             isSettingAvatar = (m_avatar != null);
             GetAvatarInfo(m_avatar);
+            savedFolderPath = GetSavedFolderPath(m_avatar.CustomStandingAnims);
         }
 
         // VRC_AvatarDescripterが設定されていない時の例外処理
@@ -251,24 +256,45 @@ public class EmoteSwitchV3Editor : EditorWindow {
                 }
                 EditorGUI.indentLevel--;
             }
-
-            isOpeningAdvancedSetting = EditorGUILayout.Foldout(isOpeningAdvancedSetting, "Advanced Setting");
-            if (isOpeningAdvancedSetting)
-            {
-                EditorGUI.indentLevel++;
-                useIdleAnim = EditorGUILayout.Toggle("Use IDLE Animation", useIdleAnim);
-                useLocal = EditorGUILayout.Toggle("Use Local EmoteSwitch", useLocal);
-                EditorGUI.indentLevel--;
-            }
-
         }
+
+        EditorGUILayout.Space();
+
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            EditorGUILayout.LabelField("SaveFolder", savedFolderPath);
+
+            if (GUILayout.Button("Select Folder", GUILayout.Width(100)))
+            {
+                savedFolderPath = EditorUtility.OpenFolderPanel("Select saved folder", "Assets/", string.Empty);
+                savedFolderPath = FileUtil.GetProjectRelativePath(savedFolderPath) + "/";
+                if (savedFolderPath == "/" && m_avatar != null)
+                {
+                    savedFolderPath = GetSavedFolderPath(m_avatar.CustomStandingAnims);
+                }
+                else if (savedFolderPath == "/")
+                {
+                    savedFolderPath = GetSavedFolderPath(null);
+                }
+            }
+        }
+
+        isOpeningAdvancedSetting = EditorGUILayout.Foldout(isOpeningAdvancedSetting, "Advanced Setting");
+        if (isOpeningAdvancedSetting)
+        {
+            EditorGUI.indentLevel++;
+            useIdleAnim = EditorGUILayout.Toggle("Use IDLE Animation", useIdleAnim);
+            useLocal = EditorGUILayout.Toggle("Use Local EmoteSwitch", useLocal);
+            EditorGUI.indentLevel--;
+        }
+
 
         EditorGUI.BeginDisabledGroup(!(isSettingAvatar && isSettingProp && (standingAnimController != null) && (m_avatar != null)));
         {
             using (new EditorGUILayout.HorizontalScope()) {
                 if (GUILayout.Button("Set EmoteSwitch"))
                 {
-                    SetEmoteSwitchV3(targetObject, m_props);
+                    SetEmoteSwitchV3(targetObject, m_props, savedFolderPath);
                 }
             }
         }
@@ -290,7 +316,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
     /// </summary>
     /// <param name="avatarObj"></param>
     /// <param name="props"></param>
-    private void SetEmoteSwitchV3(GameObject avatarObj, List<GameObject> props)
+    private void SetEmoteSwitchV3(GameObject avatarObj, List<GameObject> props, string savedFolderPath)
     {
         Undo.RegisterCompleteObjectUndo(avatarObj, UNDO_TEXT + avatarObj.name);
 
@@ -310,8 +336,9 @@ public class EmoteSwitchV3Editor : EditorWindow {
                 }
             }
 
-            emoteOnAnimClip = CreateAnimationClip(objName, EMOTE_ON);
-            emoteOffAnimClip = CreateAnimationClip(objName, EMOTE_OFF);
+            var savedFilePath = savedFolderPath + objName;
+            emoteOnAnimClip = CreateAnimationClip(savedFilePath, EMOTE_ON);
+            emoteOffAnimClip = CreateAnimationClip(savedFilePath, EMOTE_OFF);
             CopyAnimationKeys(emoteAnimClip, emoteOnAnimClip);
             CopyAnimationKeys(emoteAnimClip, emoteOffAnimClip);
 
@@ -424,7 +451,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
             // 初期状態がActiveなら非Activeにする(propStartState==Active(true) -> TO_INACTIVE)
             if (emoteOnAnimClip == null)
             {
-                emoteOnAnimClip = CreateEmoteAnimClip(EMOTE_ON, propObj.name, toggleObj, (propStartState) ? TO_INACTIVE : TO_ACTIVE);
+                emoteOnAnimClip = CreateEmoteAnimClip(EMOTE_ON, savedFolderPath + propObj.name, toggleObj, (propStartState) ? TO_INACTIVE : TO_ACTIVE);
             }
             else
             {
@@ -433,7 +460,7 @@ public class EmoteSwitchV3Editor : EditorWindow {
             // 初期状態がActiveならActiveにする(propStartState==Active(true) -> TO_ACTIVE)
             if (emoteOffAnimClip == null)
             {
-                emoteOffAnimClip = CreateEmoteAnimClip(EMOTE_OFF, propObj.name, toggleObj, (propStartState) ? TO_ACTIVE : TO_INACTIVE);
+                emoteOffAnimClip = CreateEmoteAnimClip(EMOTE_OFF, savedFolderPath + propObj.name, toggleObj, (propStartState) ? TO_ACTIVE : TO_INACTIVE);
             }
             else
             {
@@ -489,9 +516,9 @@ public class EmoteSwitchV3Editor : EditorWindow {
     /// <param name="targetObj">Emoteで操作するオブジェクト(Toggle1)</param>
     /// <param name="emoteType">EmoteAnimationでON状態にするのかOFF状態にするのか</param>
     /// <returns></returns>
-    private AnimationClip CreateEmoteAnimClip(int fileType, string propName, GameObject targetObj, int emoteType)
+    private AnimationClip CreateEmoteAnimClip(int fileType, string savedFilePath, GameObject targetObj, int emoteType)
     {
-        var animClip = CreateAnimationClip(propName, fileType);
+        var animClip = CreateAnimationClip(savedFilePath, fileType);
 
         if (useIdleAnim)
         {
@@ -679,14 +706,16 @@ public class EmoteSwitchV3Editor : EditorWindow {
     /// <param name="objName"></param>
     /// <param name="fileType"></param>
     /// <returns></returns>
-    private AnimationClip CreateAnimationClip(string objName, int fileType)
+    private AnimationClip CreateAnimationClip(string savedFilePath, int fileType)
     {
         AnimationClip animClip = new AnimationClip();
 
-        string fileName = objName + ((fileType == EMOTE_ON) ? "_ON" : "_OFF");
+        savedFilePath += ((fileType == EMOTE_ON) ? "_ON" : "_OFF") + ".anim";
+
+        CreateNoExistFolders(savedFilePath);
 
         AssetDatabase.CreateAsset(animClip, 
-            AssetDatabase.GenerateUniqueAssetPath(emoteSwitchV3EditorFolderPath + SAVE_FOLDER_PATH + fileName + ".anim"));
+            AssetDatabase.GenerateUniqueAssetPath(savedFilePath));
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
@@ -758,5 +787,57 @@ public class EmoteSwitchV3Editor : EditorWindow {
     {
         ComponentUtility.CopyComponent(fromComp);
         ComponentUtility.PasteComponentAsNew(targetObj);
+    }
+
+    /// <summary>
+    /// 保存先のフォルダのパスを取得する
+    /// </summary>
+    /// <param name="controller"></param>
+    /// <returns></returns>
+    private string GetSavedFolderPath(AnimatorOverrideController controller)
+    {
+        if (controller == null) return "Assets/"+EMOTE_SWITCH_SAVED_FOLDER+"/";
+
+        var filePath = AssetDatabase.GetAssetPath(controller);
+        return Path.GetDirectoryName(filePath).Replace('\\', '/') + "/"+EMOTE_SWITCH_SAVED_FOLDER+"/";
+    }
+
+    /// <summary>
+    /// パス内で存在しないフォルダを作成する
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static bool CreateNoExistFolders(string path)
+    {
+        string directoryPath;
+        if (string.IsNullOrEmpty(Path.GetExtension(path)))
+        {
+            directoryPath = path;
+        }
+        else
+        {
+            directoryPath = Path.GetDirectoryName(path);
+        }
+
+        if (!Directory.Exists(directoryPath))
+        {
+            var directories = directoryPath.Split(BSLASH);
+
+            directoryPath = "Assets";
+            for (int i = 1; i < directories.Length; i++)
+            {
+                if (!Directory.Exists(directoryPath + BSLASH + directories[i]))
+                {
+                    AssetDatabase.CreateFolder(directoryPath, directories[i]);
+                }
+
+                directoryPath += BSLASH + directories[i];
+            }
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            return true;
+        }
+
+        return false;
     }
 }
