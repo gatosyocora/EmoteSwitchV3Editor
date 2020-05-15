@@ -25,7 +25,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             {
                 this.obj = obj;
                 defaultState = false;
-                isLocalEmoteSwitch = true;
+                isLocalEmoteSwitch = false;
             }
         }
 
@@ -284,7 +284,15 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 using (new EditorGUI.IndentLevelScope())
                 {
                     useIdleAnim = EditorGUILayout.Toggle("Use IDLE Animation", useIdleAnim);
-                    useLocal = EditorGUILayout.Toggle("Use Local EmoteSwitch", useLocal);
+
+                    using (var check = new EditorGUI.ChangeCheckScope())
+                    {
+                        useLocal = EditorGUILayout.Toggle("Use Local EmoteSwitch", useLocal);
+                        if (check.changed)
+                        {
+                            propList.ForEach(x => x.isLocalEmoteSwitch = useLocal);
+                        }
+                    }
                 }
             }
 
@@ -357,7 +365,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 objectTrans.gameObject.SetActive(propDefaultState);
 
                 GameObject localSystemObj = null;
-                if (useLocal && prop.isLocalEmoteSwitch)
+                if (prop.isLocalEmoteSwitch)
                 {
                     // LocalSystemを設定する
                     var localSystemPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(emoteSwitchV3EditorFolderPath + LOCAL_SYSTEM_PREFAB_PATH);
@@ -387,7 +395,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
                 if (joints.Length > 0 || followers.Length > 0)
                 {
-                    if (useLocal && prop.isLocalEmoteSwitch)
+                    if (prop.isLocalEmoteSwitch)
                     {
                         var jointObj = new GameObject("EmoteSwitchV3_Local_" + propObj.name + "_Joint");
                         Undo.RegisterCreatedObjectUndo(jointObj, "Create " + jointObj.name);
@@ -430,14 +438,14 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                                             EMOTE_TYPE.ON, 
                                             savedFolderPath + propObj.name, 
                                             toggleObj.transform, 
-                                            avatar.transform, 
+                                            avatarObj.transform, 
                                             (propDefaultState) ? TO_STATE.INACTIVE : TO_STATE.ACTIVE);
                 }
                 else
                 {
                     AddEmoteAnimClip(ref emoteOnAnimClip, 
-                                        toggleObj.transform, 
-                                        avatar.transform, 
+                                        toggleObj.transform,
+                                        avatarObj.transform, 
                                         (propDefaultState) ? TO_STATE.INACTIVE : TO_STATE.ACTIVE, 
                                         emoteAnimTime);
                 }
@@ -447,15 +455,15 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                     emoteOffAnimClip = CreateEmoteAnimClip(
                                             EMOTE_TYPE.OFF, 
                                             savedFolderPath + propObj.name, 
-                                            toggleObj.transform, 
-                                            avatar.transform, 
+                                            toggleObj.transform,
+                                            avatarObj.transform, 
                                             (propDefaultState) ? TO_STATE.ACTIVE : TO_STATE.INACTIVE);
                 }
                 else
                 {
                     AddEmoteAnimClip(ref emoteOffAnimClip, 
-                                        toggleObj.transform, 
-                                        avatar.transform, 
+                                        toggleObj.transform,
+                                        avatarObj.transform, 
                                         (propDefaultState) ? TO_STATE.ACTIVE : TO_STATE.INACTIVE, 
                                         emoteAnimTime);
                 }
