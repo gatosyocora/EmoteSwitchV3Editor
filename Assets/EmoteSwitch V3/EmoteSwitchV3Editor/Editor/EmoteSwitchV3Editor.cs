@@ -120,7 +120,7 @@ public class EmoteSwitchV3Editor : EditorWindow
 
     private void OnGUI()
     {
-        EditorGUI.BeginChangeCheck();
+        using (var check = new EditorGUI.ChangeCheckScope())
         {
             m_avatar = EditorGUILayout.ObjectField(
                 "Avatar",
@@ -128,11 +128,12 @@ public class EmoteSwitchV3Editor : EditorWindow
                 typeof(VRC_AvatarDescriptor),
                 true
             ) as VRC_AvatarDescriptor;
-        }
-        if (EditorGUI.EndChangeCheck())
-        {
-            GetAvatarInfo(m_avatar);
-            savedFolderPath = GetSavedFolderPath(m_avatar.CustomStandingAnims);
+
+            if (check.changed && m_avatar != null)
+            {
+                GetAvatarInfo(m_avatar);
+                savedFolderPath = GetSavedFolderPath(m_avatar.CustomStandingAnims);
+            }
         }
 
         // VRC_AvatarDescripterが設定されていない時の例外処理
@@ -170,8 +171,8 @@ public class EmoteSwitchV3Editor : EditorWindow
                 EditorGUILayout.LabelField("Local", GUILayout.Width(35f));
             }
         }
-        EditorGUI.indentLevel++;
-        EditorGUI.BeginChangeCheck();
+
+        using (new EditorGUI.IndentLevelScope())
         {
             for (int i = 0; i < m_props.Count; i++)
             {
@@ -195,30 +196,28 @@ public class EmoteSwitchV3Editor : EditorWindow
 
             }
         }
-        EditorGUI.indentLevel--;
-
 
         if (targetObject != null)
         {
-            // VRC_AvatarDescripterに設定してあるAnimator
             EditorGUILayout.Space();
+
+            // VRC_AvatarDescripterに設定してあるAnimator
             EditorGUILayout.LabelField("Custom Standing Anims", EditorStyles.boldLabel);
+
+            using (new EditorGUI.IndentLevelScope())
+            using (var check = new EditorGUI.ChangeCheckScope())
             {
-                EditorGUI.indentLevel++;
-                EditorGUI.BeginChangeCheck();
-                {
-                    standingAnimController = EditorGUILayout.ObjectField(
-                        "Standing Anims",
-                        standingAnimController,
-                        typeof(AnimatorOverrideController),
-                        true
-                    ) as AnimatorOverrideController;
-                }
-                if (EditorGUI.EndChangeCheck())
+                standingAnimController = EditorGUILayout.ObjectField(
+                    "Standing Anims",
+                    standingAnimController,
+                    typeof(AnimatorOverrideController),
+                    true
+                ) as AnimatorOverrideController;
+
+                if (check.changed)
                 {
                     m_avatar.CustomStandingAnims = standingAnimController;
                 }
-                EditorGUI.indentLevel--;
             }
 
             // CustomStandingAnimsが設定されていない時の例外処理
@@ -227,14 +226,16 @@ public class EmoteSwitchV3Editor : EditorWindow
                 EditorGUILayout.HelpBox("Set Custom Standing Anims in VRC_AvatarDescripter", MessageType.Warning);
             }
 
-            // Standing AnimatorのEmoteに設定してあるAnimationファイル
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Emote(Standing Anims)", EditorStyles.boldLabel);
-            {
-                // どのEmoteに設定するか選ぶ
-                selectedOnOffEmote = (EMOTES)EditorGUILayout.EnumPopup("ON & OFF Emote", selectedOnOffEmote);
 
-                EditorGUI.indentLevel++;
+            // Standing AnimatorのEmoteに設定してあるAnimationファイル
+            EditorGUILayout.LabelField("Emote(Standing Anims)", EditorStyles.boldLabel);
+
+            // どのEmoteに設定するか選ぶ
+            selectedOnOffEmote = (EMOTES)EditorGUILayout.EnumPopup("ON & OFF Emote", selectedOnOffEmote);
+
+            using (new EditorGUI.IndentLevelScope())
+            {
                 for (int i = 0; i < EMOTE_NAMES.Length; i++)
                 {
                     if (standingAnimController == null || standingAnimController[EMOTE_NAMES[i]].name == EMOTE_NAMES[i])
@@ -257,7 +258,6 @@ public class EmoteSwitchV3Editor : EditorWindow
                         ) as AnimationClip;
                     }
                 }
-                EditorGUI.indentLevel--;
             }
         }
 
@@ -285,10 +285,11 @@ public class EmoteSwitchV3Editor : EditorWindow
         isOpeningAdvancedSetting = EditorGUILayout.Foldout(isOpeningAdvancedSetting, "Advanced Setting");
         if (isOpeningAdvancedSetting)
         {
-            EditorGUI.indentLevel++;
-            useIdleAnim = EditorGUILayout.Toggle("Use IDLE Animation", useIdleAnim);
-            useLocal = EditorGUILayout.Toggle("Use Local EmoteSwitch", useLocal);
-            EditorGUI.indentLevel--;
+            using (new EditorGUI.IndentLevelScope())
+            {
+                useIdleAnim = EditorGUILayout.Toggle("Use IDLE Animation", useIdleAnim);
+                useLocal = EditorGUILayout.Toggle("Use Local EmoteSwitch", useLocal);
+            }
         }
 
         using (new EditorGUI.DisabledGroupScope(m_avatar == null || standingAnimController == null || !CheckSettingProp(m_props)))
