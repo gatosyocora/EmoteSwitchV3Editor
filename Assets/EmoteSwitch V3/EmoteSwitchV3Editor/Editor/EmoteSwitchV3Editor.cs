@@ -21,9 +21,6 @@ public class EmoteSwitchV3Editor : EditorWindow
 
     private AnimationClip emoteAnimClip = null;
 
-    private bool isSettingAvatar = false;
-    private bool isSettingProp = false;
-
     private enum EMOTE_TYPE
     {
         ON, OFF
@@ -134,7 +131,6 @@ public class EmoteSwitchV3Editor : EditorWindow
         }
         if (EditorGUI.EndChangeCheck())
         {
-            isSettingAvatar = (m_avatar != null);
             GetAvatarInfo(m_avatar);
             savedFolderPath = GetSavedFolderPath(m_avatar.CustomStandingAnims);
         }
@@ -198,10 +194,6 @@ public class EmoteSwitchV3Editor : EditorWindow
                 }
 
             }
-        }
-        if (EditorGUI.EndChangeCheck())
-        {
-            isSettingProp = CheckSettingProp(m_props);
         }
         EditorGUI.indentLevel--;
 
@@ -299,18 +291,14 @@ public class EmoteSwitchV3Editor : EditorWindow
             EditorGUI.indentLevel--;
         }
 
-
-        EditorGUI.BeginDisabledGroup(!(isSettingAvatar && isSettingProp && (standingAnimController != null) && (m_avatar != null)));
+        using (new EditorGUI.DisabledGroupScope(m_avatar == null || standingAnimController == null || !CheckSettingProp(m_props)))
+        using (new EditorGUILayout.HorizontalScope())
         {
-            using (new EditorGUILayout.HorizontalScope())
+            if (GUILayout.Button("Set EmoteSwitch"))
             {
-                if (GUILayout.Button("Set EmoteSwitch"))
-                {
-                    SetEmoteSwitchV3(targetObject, m_props, savedFolderPath);
-                }
+                SetEmoteSwitchV3(targetObject, m_props, savedFolderPath);
             }
         }
-        EditorGUI.EndDisabledGroup();
 
         using (new EditorGUI.DisabledGroupScope(!Undo.GetCurrentGroupName().StartsWith(UNDO_TEXT)))
         using (new EditorGUILayout.HorizontalScope())
