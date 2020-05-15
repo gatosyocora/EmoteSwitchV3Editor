@@ -710,7 +710,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
             savedFilePath += ((type == EMOTE_TYPE.ON) ? "_ON" : "_OFF") + ".anim";
 
-            CreateNoExistFolders(savedFilePath);
+            CreateFolderIfNeeded(savedFilePath);
 
             AssetDatabase.CreateAsset(animClip,
                 AssetDatabase.GenerateUniqueAssetPath(savedFilePath));
@@ -803,39 +803,20 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <summary>
         /// パス内で存在しないフォルダを作成する
         /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public static bool CreateNoExistFolders(string path)
+        /// <param name="path">ファイルパス</param>
+        /// <returns>新しいフォルダを作成したかどうか</returns>
+        public static bool CreateFolderIfNeeded(string path)
         {
-            string directoryPath;
-            if (string.IsNullOrEmpty(Path.GetExtension(path)))
-            {
-                directoryPath = path;
-            }
-            else
-            {
-                directoryPath = Path.GetDirectoryName(path);
-            }
-
+            string directoryPath = Path.GetDirectoryName(path);
             if (!Directory.Exists(directoryPath))
             {
-                var directories = directoryPath.Split(BSLASH);
+                Directory.CreateDirectory(directoryPath);
 
-                directoryPath = "Assets";
-                for (int i = 1; i < directories.Length; i++)
-                {
-                    if (!Directory.Exists(directoryPath + BSLASH + directories[i]))
-                    {
-                        AssetDatabase.CreateFolder(directoryPath, directories[i]);
-                    }
-
-                    directoryPath += BSLASH + directories[i];
-                }
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
                 return true;
             }
-
+            
             return false;
         }
     }
