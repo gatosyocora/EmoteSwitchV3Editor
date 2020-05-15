@@ -15,10 +15,22 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 {
     public class EmoteSwitchV3Editor : EditorWindow
     {
+        public class Prop
+        {
+            public GameObject obj { get; set; }
+            public bool defaultState { get; set; } = false;
+            public bool isLocalEmoteSwitch { get; set; } = false;
+
+            public Prop(GameObject obj)
+            {
+                this.obj = obj;
+                defaultState = false;
+                isLocalEmoteSwitch = true;
+            }
+        }
+
         private GameObject targetObject = null;
-        private List<GameObject> props;
-        private List<bool> propStartStates;
-        private List<bool> isLocal;
+        private List<Prop> propList;
 
         private AnimationClip emoteAnimClip = null;
 
@@ -100,20 +112,10 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
         private void OnEnable()
         {
-            props = new List<GameObject>
-        {
-            null
-        };
-
-            propStartStates = new List<bool>
-        {
-            false
-        };
-
-            isLocal = new List<bool>
-        {
-            true
-        };
+            propList = new List<Prop>()
+            {
+                new Prop(null)
+            };
 
             emoteSwitchV3EditorFolderPath = GetEmoteSwitchV3EditorFolderPath();
             idleAniamtionFbxPath = GetIdleAnimationFbxPath();
@@ -148,17 +150,13 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 EditorGUILayout.LabelField("Prop Objects", EditorStyles.boldLabel);
                 if (GUILayout.Button("+"))
                 {
-                    props.Add(null);
-                    propStartStates.Add(false);
-                    isLocal.Add(true);
+                    propList.Add(new Prop(null));
                 }
                 if (GUILayout.Button("-"))
                 {
-                    if (props.Count > 1)
+                    if (propList.Count > 1)
                     {
-                        props.RemoveAt(props.Count - 1);
-                        propStartStates.RemoveAt(props.Count - 1);
-                        isLocal.RemoveAt(props.Count - 1);
+                        propList.RemoveAt(propList.Count - 1);
                     }
                 }
             }
@@ -175,26 +173,25 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
             using (new EditorGUI.IndentLevelScope())
             {
-                for (int i = 0; i < props.Count; i++)
+                var index = 0;
+                foreach (var prop in propList)
                 {
-
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        propStartStates[i] = EditorGUILayout.Toggle(propStartStates[i], GUILayout.MinWidth(30), GUILayout.MaxWidth(30));
+                        prop.defaultState = EditorGUILayout.Toggle(prop.defaultState, GUILayout.MinWidth(30), GUILayout.MaxWidth(30));
 
-                        props[i] = EditorGUILayout.ObjectField(
-                            "Prop " + (i + 1),
-                            props[i],
+                        prop.obj = EditorGUILayout.ObjectField(
+                            "Prop " + (index + 1),
+                            prop.obj,
                             typeof(GameObject),
                             true
                         ) as GameObject;
 
                         if (useLocal)
                         {
-                            isLocal[i] = EditorGUILayout.ToggleLeft("", isLocal[i], GUILayout.Width(30f));
+                            prop.isLocalEmoteSwitch = EditorGUILayout.ToggleLeft("", prop.isLocalEmoteSwitch, GUILayout.Width(30f));
                         }
                     }
-
                 }
             }
 
@@ -293,12 +290,12 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 }
             }
 
-            using (new EditorGUI.DisabledGroupScope(avatar == null || standingAnimController == null || !CheckSettingProp(props)))
+            using (new EditorGUI.DisabledGroupScope(avatar == null || standingAnimController == null || !CheckSettingProp(propList.Select(x => x.obj).ToList())))
             using (new EditorGUILayout.HorizontalScope())
             {
                 if (GUILayout.Button("Set EmoteSwitch"))
                 {
-                    SetEmoteSwitchV3(targetObject, props, savedFolderPath);
+                    SetEmoteSwitchV3(targetObject, propList, savedFolderPath);
                 }
             }
 
@@ -318,7 +315,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// </summary>
         /// <param name="avatarObj"></param>
         /// <param name="props"></param>
-        private void SetEmoteSwitchV3(GameObject avatarObj, List<GameObject> props, string savedFolderPath)
+        private void SetEmoteSwitchV3(GameObject avatarObj, List<Prop> propList, string savedFolderPath)
         {
             Undo.RegisterCompleteObjectUndo(avatarObj, UNDO_TEXT + avatarObj.name);
 
@@ -329,11 +326,11 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             {
                 var objName = avatarObj.name;
 
-                foreach (var prop in props)
+                foreach (var prop in propList)
                 {
                     if (prop != null)
                     {
-                        objName = prop.name;
+                        objName = prop.obj.name;
                         break;
                     }
                 }
@@ -354,14 +351,13 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 PrefabUtility.UnpackPrefabInstance(avatarObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             }
 
-            for (int i = 0; i < props.Count; i++)
+            foreach (var prop in propList)
             {
-                var propObj = props[i];
+                var propObj = prop.obj;
+                var propDefaultState = prop.defaultState;
 
                 // Propが未設定なら次へ
                 if (propObj == null) continue;
-
-                var propStartState = propStartStates[i];
 
                 // propObjと同じ位置にEmoteSwitchV3を作成する
                 var parentTrans = propObj.transform.parent;
@@ -381,10 +377,10 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 // EmoteSwitchV3にpropObjを設定する
                 var objectTrans = emoteSwitchObj.transform.Find(OBJECT_PATH_IN_PREFAB);
                 Undo.SetTransformParent(propObj.transform, objectTrans, propObj.name + " SetParent to " + objectTrans.name);
-                objectTrans.gameObject.SetActive(propStartState);
+                objectTrans.gameObject.SetActive(propDefaultState);
 
                 GameObject localSystemObj = null;
-                if (useLocal && isLocal[i])
+                if (useLocal && prop.isLocalEmoteSwitch)
                 {
                     // LocalSystemを設定する
                     var localSystemPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(emoteSwitchV3EditorFolderPath + LOCAL_SYSTEM_PREFAB_PATH);
@@ -414,7 +410,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
                 if (joints.Length > 0 || followers.Length > 0)
                 {
-                    if (useLocal && isLocal[i])
+                    if (useLocal && prop.isLocalEmoteSwitch)
                     {
                         var jointObj = new GameObject("EmoteSwitchV3_Local_" + propObj.name + "_Joint");
                         Undo.RegisterCreatedObjectUndo(jointObj, "Create " + jointObj.name);
@@ -453,20 +449,20 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 // 初期状態がActiveなら非Activeにする(propStartState==Active(true) -> TO_INACTIVE)
                 if (emoteOnAnimClip == null)
                 {
-                    emoteOnAnimClip = CreateEmoteAnimClip(EMOTE_TYPE.ON, savedFolderPath + propObj.name, toggleObj, (propStartState) ? TO_STATE.INACTIVE : TO_STATE.ACTIVE);
+                    emoteOnAnimClip = CreateEmoteAnimClip(EMOTE_TYPE.ON, savedFolderPath + propObj.name, toggleObj, (propDefaultState) ? TO_STATE.INACTIVE : TO_STATE.ACTIVE);
                 }
                 else
                 {
-                    AddEmoteAnimClip(ref emoteOnAnimClip, toggleObj, (propStartState) ? TO_STATE.INACTIVE : TO_STATE.ACTIVE, emoteAnimTime);
+                    AddEmoteAnimClip(ref emoteOnAnimClip, toggleObj, (propDefaultState) ? TO_STATE.INACTIVE : TO_STATE.ACTIVE, emoteAnimTime);
                 }
                 // 初期状態がActiveならActiveにする(propStartState==Active(true) -> TO_ACTIVE)
                 if (emoteOffAnimClip == null)
                 {
-                    emoteOffAnimClip = CreateEmoteAnimClip(EMOTE_TYPE.OFF, savedFolderPath + propObj.name, toggleObj, (propStartState) ? TO_STATE.ACTIVE : TO_STATE.INACTIVE);
+                    emoteOffAnimClip = CreateEmoteAnimClip(EMOTE_TYPE.OFF, savedFolderPath + propObj.name, toggleObj, (propDefaultState) ? TO_STATE.ACTIVE : TO_STATE.INACTIVE);
                 }
                 else
                 {
-                    AddEmoteAnimClip(ref emoteOffAnimClip, toggleObj, (propStartState) ? TO_STATE.ACTIVE : TO_STATE.INACTIVE, emoteAnimTime);
+                    AddEmoteAnimClip(ref emoteOffAnimClip, toggleObj, (propDefaultState) ? TO_STATE.ACTIVE : TO_STATE.INACTIVE, emoteAnimTime);
                 }
             }
 
