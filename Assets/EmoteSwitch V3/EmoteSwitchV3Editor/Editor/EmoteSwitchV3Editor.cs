@@ -129,7 +129,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
         /// <summary>
         /// AnimatorOverrideControllerのEmoteの名称
         /// </summary>
-        private enum Emote
+        public enum Emote
         {
             EMOTE1,
             EMOTE2,
