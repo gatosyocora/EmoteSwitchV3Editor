@@ -348,7 +348,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             {
                 if (GUILayout.Button("Set EmoteSwitch"))
                 {
-                    SetEmoteSwitchV3(avatar, propList, savedFolderPath);
+                    SetEmoteSwitchV3(avatar, propList, savedFolderPath, standingAnimController);
                 }
             }
 
@@ -369,11 +369,17 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <param name="avatar">アバターのVRC_AvatarDescriptor</param>
         /// <param name="propList">EmoteSwitchで追加するオブジェクトのリスト</param>
         /// <param name="savedFolderPath">EmoteSwitchV3で作成するAnimationClipを保存するフォルダパス</param>
-        private void SetEmoteSwitchV3(VRC_AvatarDescriptor avatar, List<Prop> propList, string savedFolderPath)
+        /// <param name="avatarController">EmoteSwitchV3で作成するAnimationClipを設定するAnimatorOverrideController</param>
+        private void SetEmoteSwitchV3(VRC_AvatarDescriptor avatar, List<Prop> propList, string savedFolderPath, AnimatorOverrideController avatarController = null)
         {
             var avatarObj = avatar.gameObject;
             var avatarTrans = avatar.transform;
             var avatarName = avatar.name;
+
+            if (avatarController == null)
+            {
+                avatarController = avatar.CustomStandingAnims;
+            }
 
             Undo.RegisterCompleteObjectUndo(avatarObj, UNDO_TEXT + avatarName);
 
@@ -526,9 +532,9 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             }
 
             // EmoteAnimationを設定する
-            Undo.RecordObject(standingAnimController, "Set Animation For EmoteSwitch to Controller");
-            standingAnimController[EMOTE_NAMES[(int)selectedOnOffEmote * 2]] = emoteOnAnimClip;
-            standingAnimController[EMOTE_NAMES[(int)selectedOnOffEmote * 2 + 1]] = emoteOffAnimClip;
+            Undo.RecordObject(avatarController, "Set Animation For EmoteSwitch to Controller");
+            avatarController[EMOTE_NAMES[(int)selectedOnOffEmote * 2]] = emoteOnAnimClip;
+            avatarController[EMOTE_NAMES[(int)selectedOnOffEmote * 2 + 1]] = emoteOffAnimClip;
 
             Undo.SetCurrentGroupName(UNDO_TEXT + avatarName);
         }
