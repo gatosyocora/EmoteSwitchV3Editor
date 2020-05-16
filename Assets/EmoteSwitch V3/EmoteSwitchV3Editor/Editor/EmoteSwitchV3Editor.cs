@@ -32,7 +32,8 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             }
         }
 
-        private GameObject targetObject = null;
+        private VRC_AvatarDescriptor avatar = null;
+        private AnimatorOverrideController standingAnimController = null;
         private List<Prop> propList;
 
         private enum EmoteType
@@ -110,8 +111,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         private string emoteSwitchV3EditorFolderPath;
         private string idleAniamtionFbxPath;
 
-        private VRC_AvatarDescriptor avatar = null;
-        private AnimatorOverrideController standingAnimController = null;
+
 
         private readonly string[] EMOTE_NAMES = { "EMOTE1", "EMOTE2", "EMOTE3", "EMOTE4", "EMOTE5", "EMOTE6", "EMOTE7", "EMOTE8" };
 
@@ -185,7 +185,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             }
 
             // VRC_AvatarDescripterが設定されていない時の例外処理
-            if (targetObject != null && avatar == null)
+            if (avatar == null)
                 EditorGUILayout.HelpBox("Set VRC_AvatarDescripter to Avatar object", MessageType.Warning);
 
             // Props
@@ -240,7 +240,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 }
             }
 
-            if (targetObject != null)
+            if (avatar != null)
             {
                 EditorGUILayout.Space();
 
@@ -264,7 +264,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 }
 
                 // CustomStandingAnimsが設定されていない時の例外処理
-                if (targetObject != null && avatar != null && standingAnimController == null)
+                if (standingAnimController == null)
                 {
                     EditorGUILayout.HelpBox("Set Custom Standing Anims in VRC_AvatarDescripter", MessageType.Warning);
                 }
@@ -539,9 +539,6 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         private void GetAvatarInfo(VRC_AvatarDescriptor avatar)
         {
             if (avatar == null) return;
-
-            targetObject = avatar.gameObject;
-
             standingAnimController = avatar.CustomStandingAnims;
         }
 
