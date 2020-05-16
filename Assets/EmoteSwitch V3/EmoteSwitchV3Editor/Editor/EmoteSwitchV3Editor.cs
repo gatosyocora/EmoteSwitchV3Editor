@@ -796,7 +796,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
 
         }
 
-        private string GetAssetPathForSearch(string filter)
+        private static string GetAssetPathForSearch(string filter)
         {
             var guid = AssetDatabase.FindAssets(filter).FirstOrDefault();
             return AssetDatabase.GUIDToAssetPath(guid);
@@ -806,7 +806,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
         /// EmoteSwitchV3のフォルダパスを取得する（Assets/...）
         /// </summary>
         /// <returns>EmoteSwitchV3のフォルダパス</returns>
-        public string GetEmoteSwitchV3EditorFolderPath()
+        public static string GetEmoteSwitchV3EditorFolderPath()
         {
             return GetAssetPathForSearch("EmoteSwitch V3 t:Folder");
         }
