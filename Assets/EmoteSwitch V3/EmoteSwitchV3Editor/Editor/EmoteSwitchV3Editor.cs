@@ -15,6 +15,9 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 {
     public class EmoteSwitchV3Editor : EditorWindow
     {
+        /// <summary>
+        /// EmoteSwitchV3で操作するオブジェクト
+        /// </summary>
         public class Prop
         {
             public GameObject Obj { get; set; }
@@ -37,6 +40,9 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             ON, OFF
         }
 
+        /// <summary>
+        /// EmoteSwitchV3によって変更された後のPropの状態
+        /// </summary>
         private enum ToState
         {
             ACTIVE, INACTIVE
@@ -44,22 +50,60 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
         /***** 必要に応じてここからの値を変更する *****/
 
-        private static readonly string OBJECT_PATH_IN_PREFAB = "Joint/Toggle1/Object"; // Prefab内のObjectまでのパス
-        private static readonly string TOOGLE1_PATH_IN_PREFAB = "Joint/Toggle1"; // Prefab内のToogle1までのパス
-        private static readonly string JOINT_PATH_IN_PREFAB = "Joint"; // Prefab内のJointまでのパス
+        /// <summary>
+        /// Prefab内のObjectまでのパス
+        /// </summary>
+        private static readonly string OBJECT_PATH_IN_PREFAB = "Joint/Toggle1/Object";
 
-        private static readonly string PREFAB1_PATH = "/EmoteSwitchV3Editor/EmoteSwitch V3_Editor.prefab"; // Prefabのファイルパス
+        /// <summary>
+        /// Prefab内のToogle1までのパス
+        /// </summary>
+        private static readonly string TOOGLE1_PATH_IN_PREFAB = "Joint/Toggle1";
 
-        private static readonly string EMOTE_OFF_ANIMFILE_PATH = "/V3 Prefab/Emote_OFF/[1]Emote_OFF.anim"; // OFFにするキーが入ったコピー元のAnimationファイルのパス
-        private static readonly string EMOTE_ON_ANIMFILE_PATH = "/V3 Prefab/Emote_ON/[1]Emote_ON.anim"; // ONにするキーが入ったコピー元のAnimationファイルのパス
+        /// <summary>
+        /// Prefab内のJointまでのパス
+        /// </summary>
+        private static readonly string JOINT_PATH_IN_PREFAB = "Joint";
 
-        private static readonly string EMOTESWITCH_CONTROLLER_PATH = "/ToggleSwitch/Switch.controller"; // Toggle1のAnimatorに設定するAnimatorControllerまでのパス
+        /// <summary>
+        /// Prefabのファイルパス
+        /// </summary>
+        private static readonly string PREFAB1_PATH = "/EmoteSwitchV3Editor/EmoteSwitch V3_Editor.prefab";
 
-        private static readonly string IDLE_ANIMATION_NAME = "IDLE"; // Emoteアニメーションとして参照するアニメーションの名前
+        /// <summary>
+        /// OFFにするキーが入ったコピー元のAnimationファイルのパス
+        /// </summary>
+        private static readonly string EMOTE_OFF_ANIMFILE_PATH = "/V3 Prefab/Emote_OFF/[1]Emote_OFF.anim";
 
-        private static readonly string LOCAL_SYSTEM_PREFAB_PATH = "/Local_System/Prefab/Local_system.prefab"; // LocalSystemのPrefabのファイルパス
-        private static readonly string LOCAL_ROOT_BELOW_OBJECT_NAME = "Local_On_Switch"; // LocalSystem内にあるアバター直下に置くオブジェクトの名前
-        private static readonly string OBJECT_PATH_IN_LOCAL_SYSTEM = "On_Animation_Particle/On_Object/After_On/Object"; // LocalSystem内のObjectまでのパス
+        /// <summary>
+        /// ONにするキーが入ったコピー元のAnimationファイルのパス
+        /// </summary>
+        private static readonly string EMOTE_ON_ANIMFILE_PATH = "/V3 Prefab/Emote_ON/[1]Emote_ON.anim";
+
+        /// <summary>
+        /// Toggle1のAnimatorに設定するAnimatorControllerまでのパス
+        /// </summary>
+        private static readonly string EMOTESWITCH_CONTROLLER_PATH = "/ToggleSwitch/Switch.controller";
+
+        /// <summary>
+        /// Emoteアニメーションとして参照するアニメーションの名前
+        /// </summary>
+        private static readonly string IDLE_ANIMATION_NAME = "IDLE";
+
+        /// <summary>
+        /// LocalSystemのPrefabのファイルパス
+        /// </summary>
+        private static readonly string LOCAL_SYSTEM_PREFAB_PATH = "/Local_System/Prefab/Local_system.prefab";
+
+        /// <summary>
+        /// LocalSystem内にあるアバター直下に置くオブジェクトの名前
+        /// </summary>
+        private static readonly string LOCAL_ROOT_BELOW_OBJECT_NAME = "Local_On_Switch";
+
+        /// <summary>
+        /// LocalSystem内のObjectまでのパス
+        /// </summary>
+        private static readonly string OBJECT_PATH_IN_LOCAL_SYSTEM = "On_Animation_Particle/On_Object/After_On/Object";
 
         /***** 必要に応じてここまでの値を変更する *****/
 
@@ -71,6 +115,9 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
         private readonly string[] EMOTE_NAMES = { "EMOTE1", "EMOTE2", "EMOTE3", "EMOTE4", "EMOTE5", "EMOTE6", "EMOTE7", "EMOTE8" };
 
+        /// <summary>
+        /// EmoteSwitchV3のアニメーションファイルを設定するEmoteの場所
+        /// </summary>
         private enum Emotes
         {
             EMOTE1and2,
@@ -431,7 +478,8 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 var animator = toggleObj.GetComponent<Animator>();
                 var controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(emoteSwitchV3EditorFolderPath + EMOTESWITCH_CONTROLLER_PATH);
                 animator.runtimeAnimatorController = controller;
-                // 初期状態がActiveなら非Activeにする(propStartState==Active(true) -> TO_INACTIVE)
+
+                // 初期状態がActiveなら非Activeにする(propDefaultState==Active(true) -> Active(false))
                 if (emoteOnAnimClip == null)
                 {
                     emoteOnAnimClip = CreateEmoteAnimClip(
@@ -449,7 +497,8 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                                         (propDefaultState) ? ToState.INACTIVE : ToState.ACTIVE, 
                                         emoteAnimTime);
                 }
-                // 初期状態がActiveならActiveにする(propStartState==Active(true) -> TO_ACTIVE)
+
+                // 初期状態が非ActiveならActiveにする(propDefaultState==Active(false) -> Active(true))
                 if (emoteOffAnimClip == null)
                 {
                     emoteOffAnimClip = CreateEmoteAnimClip(
