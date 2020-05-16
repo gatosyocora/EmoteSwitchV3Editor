@@ -365,7 +365,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <param name="propList">EmoteSwitchで追加するオブジェクトのリスト</param>
         /// <param name="outputFolderPath">EmoteSwitchV3で作成するAnimationClipを保存するフォルダパス</param>
         /// <param name="avatarController">EmoteSwitchV3で作成するAnimationClipを設定するAnimatorOverrideController</param>
-        private void SetEmoteSwitchV3(VRC_AvatarDescriptor avatar, List<Prop> propList, string outputFolderPath, AnimatorOverrideController avatarController = null)
+        private void SetEmoteSwitchV3(VRC_AvatarDescriptor avatar, IList<Prop> propList, string outputFolderPath, AnimatorOverrideController avatarController = null)
         {
             if (avatar == null || propList == null || string.IsNullOrEmpty(outputFolderPath))
                 return;
