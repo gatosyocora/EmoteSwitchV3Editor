@@ -751,12 +751,10 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
         /// <returns></returns>
         private AnimationClip GetAnimationClipFromFbx(string fbxPath, string animName)
         {
-            var anims = AssetDatabase.LoadAllAssetsAtPath(fbxPath);
-
-            var animObj = System.Array.Find<UnityEngine.Object>(anims, item => item is AnimationClip && item.name == animName);
-
-            var animClip = UnityEngine.Object.Instantiate(animObj) as AnimationClip;
-
+            var animObj = AssetDatabase.LoadAllAssetsAtPath(fbxPath)
+                            .Where(x => x is AnimationClip && x.name == animName)
+                            .First();
+            var animClip = Instantiate(animObj) as AnimationClip;
             return animClip;
         }
 
