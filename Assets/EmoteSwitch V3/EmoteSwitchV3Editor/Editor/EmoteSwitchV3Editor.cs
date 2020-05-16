@@ -36,7 +36,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         private AnimatorOverrideController standingAnimController = null;
         private List<Prop> propList;
 
-        private string savedFolderPath;
+        private string outputFolderPath;
 
         #region StaticReadOnly
         /***** 必要に応じてここからの値を変更する *****/
@@ -176,7 +176,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 if (check.changed && avatar != null)
                 {
                     SetAvatarInfo(avatar);
-                    savedFolderPath = GetSavedFolderPath(avatar.CustomStandingAnims);
+                    outputFolderPath = GetSavedFolderPath(avatar.CustomStandingAnims);
                 }
             }
 
@@ -303,19 +303,19 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
             using (new EditorGUILayout.HorizontalScope())
             {
-                EditorGUILayout.LabelField("SaveFolder", savedFolderPath);
+                EditorGUILayout.LabelField("SaveFolder", outputFolderPath);
 
                 if (GUILayout.Button("Select Folder", GUILayout.Width(100)))
                 {
-                    savedFolderPath = EditorUtility.OpenFolderPanel("Select saved folder", "Assets/", string.Empty);
-                    savedFolderPath = FileUtil.GetProjectRelativePath(savedFolderPath) + "/";
-                    if (savedFolderPath == "/" && avatar != null)
+                    outputFolderPath = EditorUtility.OpenFolderPanel("Select saved folder", "Assets/", string.Empty);
+                    outputFolderPath = FileUtil.GetProjectRelativePath(outputFolderPath) + "/";
+                    if (outputFolderPath == "/" && avatar != null)
                     {
-                        savedFolderPath = GetSavedFolderPath(avatar.CustomStandingAnims);
+                        outputFolderPath = GetSavedFolderPath(avatar.CustomStandingAnims);
                     }
-                    else if (savedFolderPath == "/")
+                    else if (outputFolderPath == "/")
                     {
-                        savedFolderPath = GetSavedFolderPath(null);
+                        outputFolderPath = GetSavedFolderPath(null);
                     }
                 }
             }
@@ -343,7 +343,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             {
                 if (GUILayout.Button("Set EmoteSwitch"))
                 {
-                    SetEmoteSwitchV3(avatar, propList, savedFolderPath, standingAnimController);
+                    SetEmoteSwitchV3(avatar, propList, outputFolderPath, standingAnimController);
                 }
             }
 
