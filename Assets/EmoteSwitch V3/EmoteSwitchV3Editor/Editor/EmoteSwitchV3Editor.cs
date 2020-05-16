@@ -17,14 +17,14 @@ namespace Gatosyocora.EmoteSwitchV3Editor
     {
         public class Prop
         {
-            public GameObject obj { get; set; }
-            public bool defaultState { get; set; } = false;
+            public GameObject Obj { get; set; }
+            public bool DefaultState { get; set; } = false;
             public bool isLocalEmoteSwitch { get; set; } = false;
 
             public Prop(GameObject obj)
             {
-                this.obj = obj;
-                defaultState = false;
+                this.Obj = obj;
+                DefaultState = false;
                 isLocalEmoteSwitch = false;
             }
         }
@@ -176,11 +176,11 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 {
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        prop.defaultState = EditorGUILayout.Toggle(prop.defaultState, GUILayout.MinWidth(30), GUILayout.MaxWidth(30));
+                        prop.DefaultState = EditorGUILayout.Toggle(prop.DefaultState, GUILayout.MinWidth(30), GUILayout.MaxWidth(30));
 
-                        prop.obj = EditorGUILayout.ObjectField(
+                        prop.Obj = EditorGUILayout.ObjectField(
                             "Prop " + (index + 1),
-                            prop.obj,
+                            prop.Obj,
                             typeof(GameObject),
                             true
                         ) as GameObject;
@@ -338,8 +338,8 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
             foreach (var prop in propList)
             {
-                var propObj = prop.obj;
-                var propDefaultState = prop.defaultState;
+                var propObj = prop.Obj;
+                var propDefaultState = prop.DefaultState;
 
                 // Propが未設定なら次へ
                 if (propObj == null) continue;
@@ -497,7 +497,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         private bool CheckSettingProp(List<Prop> propList)
         {
             if (propList == null) return false;
-            return propList.Any(x => x.obj != null);
+            return propList.Any(x => x.Obj != null);
         }
 
         /// <summary>
