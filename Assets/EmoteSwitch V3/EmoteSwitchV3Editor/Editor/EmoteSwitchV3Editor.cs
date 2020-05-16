@@ -114,18 +114,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /***** 必要に応じてここまでの値を変更する *****/
         #endregion
 
-        private string _emoteSwitchV3EditorFolderPath = string.Empty;
-        public string EmoteSwitchV3EditorFolderPath
-        {
-            get 
-            {
-                if (string.IsNullOrEmpty(_emoteSwitchV3EditorFolderPath))
-                {
-                    _emoteSwitchV3EditorFolderPath = GetEmoteSwitchV3EditorFolderPath();
-                }
-                return _emoteSwitchV3EditorFolderPath;
-            }
-        }
+        private string EMOTE_SWITCH_V3_EDITOR_FOLDER_PATH;
         private string IDLE_ANIAMTION_FBX_PATH;
 
 
@@ -169,6 +158,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 new Prop()
             };
 
+            EMOTE_SWITCH_V3_EDITOR_FOLDER_PATH = GetEmoteSwitchV3EditorFolderPath();
             IDLE_ANIAMTION_FBX_PATH = GetIdleAnimationFbxPath();
         }
 
@@ -416,7 +406,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
                 // propObjと同じ位置にEmoteSwitchV3を作成する
                 var parentTrans = propObj.transform.parent;
-                var emoteSwitchPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(EmoteSwitchV3EditorFolderPath + PREFAB1_PATH);
+                var emoteSwitchPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(EMOTE_SWITCH_V3_EDITOR_FOLDER_PATH + PREFAB1_PATH);
                 var emoteSwitchObj = Instantiate(emoteSwitchPrefab, propObj.transform.position, Quaternion.identity) as GameObject;
                 emoteSwitchObj.name = "EmoteSwitch V3_" + propObj.name;
                 Undo.RegisterCreatedObjectUndo(emoteSwitchObj, "Instantiate " + emoteSwitchObj.name);
@@ -438,7 +428,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 if (prop.IsLocalEmoteSwitch)
                 {
                     // LocalSystemを設定する
-                    var localSystemPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(EmoteSwitchV3EditorFolderPath + LOCAL_SYSTEM_PREFAB_PATH);
+                    var localSystemPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(EMOTE_SWITCH_V3_EDITOR_FOLDER_PATH + LOCAL_SYSTEM_PREFAB_PATH);
                     localSystemObj = Instantiate(localSystemPrefab, propObj.transform.position, Quaternion.identity) as GameObject;
                     localSystemObj.name = "EmoteSwitchV3_Local_" + propObj.name;
                     Undo.RegisterCreatedObjectUndo(localSystemObj, "Instantiate " + localSystemObj.name);
@@ -499,7 +489,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 // EmoteAnimationを作成する
                 var toggleObj = emoteSwitchObj.transform.Find(TOOGLE1_PATH_IN_PREFAB).gameObject;
                 var animator = toggleObj.GetComponent<Animator>();
-                var controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(EmoteSwitchV3EditorFolderPath + EMOTESWITCH_CONTROLLER_PATH);
+                var controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(EMOTE_SWITCH_V3_EDITOR_FOLDER_PATH + EMOTESWITCH_CONTROLLER_PATH);
                 animator.runtimeAnimatorController = controller;
 
                 // 初期状態がActiveなら非Activeにする(propDefaultState==Active(true) -> Active(false))
@@ -593,7 +583,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
             string path = AnimationUtility.CalculateTransformPath(propTrans, rootTrans);
 
-            string animFilePath = EmoteSwitchV3EditorFolderPath;
+            string animFilePath = EMOTE_SWITCH_V3_EDITOR_FOLDER_PATH;
             if (toState)
             {
                 animFilePath += EMOTE_ON_ANIMFILE_PATH;
@@ -633,7 +623,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         {
             string path = AnimationUtility.CalculateTransformPath(propTrans, rootTrans);
 
-            string animFilePath = EmoteSwitchV3EditorFolderPath;
+            string animFilePath = EMOTE_SWITCH_V3_EDITOR_FOLDER_PATH;
             if (toState)
             {
                 animFilePath += EMOTE_ON_ANIMFILE_PATH;
