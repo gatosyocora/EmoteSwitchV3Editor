@@ -351,7 +351,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             using (new EditorGUILayout.HorizontalScope())
             {
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button("Rever before Set EmoteSwitch"))
+                if (GUILayout.Button("Revert before Set EmoteSwitch"))
                 {
                     Undo.PerformUndo();
                 }
