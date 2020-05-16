@@ -729,13 +729,13 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
         {
             float animTime = 0f;
 
-            var bindings = AnimationUtility.GetCurveBindings(anim).ToArray();
+            var bindings = AnimationUtility.GetCurveBindings(anim);
 
             foreach (var binding in bindings)
             {
                 var keys = AnimationUtility.GetEditorCurve(anim, binding).keys;
 
-                var lastKey = keys[keys.Length - 1];
+                var lastKey = keys.Last();
                 if (animTime < lastKey.time)
                     animTime = lastKey.time;
             }
