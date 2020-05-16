@@ -112,9 +112,10 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         private static readonly string[] EMOTE_NAMES = { "EMOTE1", "EMOTE2", "EMOTE3", "EMOTE4", "EMOTE5", "EMOTE6", "EMOTE7", "EMOTE8" };
 
         /***** 必要に応じてここまでの値を変更する *****/
+        #endregion
 
-        private string emoteSwitchV3EditorFolderPath;
-        private string idleAniamtionFbxPath;
+        private string EMOTE_SWITCH_V3_EDITOR_FOLDER_PATH;
+        private string IDLE_ANIAMTION_FBX_PATH;
 
 
         /// <summary>
@@ -157,8 +158,8 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 new Prop(null)
             };
 
-            emoteSwitchV3EditorFolderPath = GetEmoteSwitchV3EditorFolderPath();
-            idleAniamtionFbxPath = GetIdleAnimationFbxPath();
+            EMOTE_SWITCH_V3_EDITOR_FOLDER_PATH = GetEmoteSwitchV3EditorFolderPath();
+            IDLE_ANIAMTION_FBX_PATH = GetIdleAnimationFbxPath();
         }
 
         private void OnGUI()
@@ -393,7 +394,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             AnimationClip poseAnimClip = null;
             if (useIdleAnim)
             {
-                poseAnimClip = GetAnimationClipFromFbx(idleAniamtionFbxPath, IDLE_ANIMATION_NAME);
+                poseAnimClip = GetAnimationClipFromFbx(IDLE_ANIAMTION_FBX_PATH, IDLE_ANIMATION_NAME);
             }
 
             foreach (var prop in propList)
@@ -406,7 +407,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
                 // propObjと同じ位置にEmoteSwitchV3を作成する
                 var parentTrans = propObj.transform.parent;
-                var emoteSwitchPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(emoteSwitchV3EditorFolderPath + PREFAB1_PATH);
+                var emoteSwitchPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(EMOTE_SWITCH_V3_EDITOR_FOLDER_PATH + PREFAB1_PATH);
                 var emoteSwitchObj = Instantiate(emoteSwitchPrefab, propObj.transform.position, Quaternion.identity) as GameObject;
                 emoteSwitchObj.name = "EmoteSwitch V3_" + propObj.name;
                 Undo.RegisterCreatedObjectUndo(emoteSwitchObj, "Instantiate " + emoteSwitchObj.name);
@@ -428,7 +429,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 if (prop.IsLocalEmoteSwitch)
                 {
                     // LocalSystemを設定する
-                    var localSystemPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(emoteSwitchV3EditorFolderPath + LOCAL_SYSTEM_PREFAB_PATH);
+                    var localSystemPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(EMOTE_SWITCH_V3_EDITOR_FOLDER_PATH + LOCAL_SYSTEM_PREFAB_PATH);
                     localSystemObj = Instantiate(localSystemPrefab, propObj.transform.position, Quaternion.identity) as GameObject;
                     localSystemObj.name = "EmoteSwitchV3_Local_" + propObj.name;
                     Undo.RegisterCreatedObjectUndo(localSystemObj, "Instantiate " + localSystemObj.name);
@@ -489,7 +490,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 // EmoteAnimationを作成する
                 var toggleObj = emoteSwitchObj.transform.Find(TOOGLE1_PATH_IN_PREFAB).gameObject;
                 var animator = toggleObj.GetComponent<Animator>();
-                var controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(emoteSwitchV3EditorFolderPath + EMOTESWITCH_CONTROLLER_PATH);
+                var controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(EMOTE_SWITCH_V3_EDITOR_FOLDER_PATH + EMOTESWITCH_CONTROLLER_PATH);
                 animator.runtimeAnimatorController = controller;
 
                 // 初期状態がActiveなら非Activeにする(propDefaultState==Active(true) -> Active(false))
@@ -583,7 +584,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
             string path = AnimationUtility.CalculateTransformPath(propTrans, rootTrans);
 
-            string animFilePath = emoteSwitchV3EditorFolderPath;
+            string animFilePath = EMOTE_SWITCH_V3_EDITOR_FOLDER_PATH;
             if (toState)
             {
                 animFilePath += EMOTE_ON_ANIMFILE_PATH;
@@ -623,7 +624,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         {
             string path = AnimationUtility.CalculateTransformPath(propTrans, rootTrans);
 
-            string animFilePath = emoteSwitchV3EditorFolderPath;
+            string animFilePath = EMOTE_SWITCH_V3_EDITOR_FOLDER_PATH;
             if (toState)
             {
                 animFilePath += EMOTE_ON_ANIMFILE_PATH;
