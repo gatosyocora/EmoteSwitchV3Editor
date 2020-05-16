@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEditorInternal;
 using System.IO;
+using System;
 
 // ver 1.3
 // created by gatosyocora
@@ -106,11 +107,6 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// </summary>
         private static readonly string EMOTE_SWITCH_SAVED_FOLDER = "ESV3Animation";
 
-        /// <summary>
-        /// AnimatorOverrideControllerのEmoteの名称
-        /// </summary>
-        private static readonly string[] EMOTE_NAMES = { "EMOTE1", "EMOTE2", "EMOTE3", "EMOTE4", "EMOTE5", "EMOTE6", "EMOTE7", "EMOTE8" };
-
         /***** 必要に応じてここまでの値を変更する *****/
         #endregion
 
@@ -129,6 +125,21 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             EMOTE7and8,
         };
         private EmotePair selectedOnOffEmote = EmotePair.EMOTE1and2;
+
+        /// <summary>
+        /// AnimatorOverrideControllerのEmoteの名称
+        /// </summary>
+        private enum Emote
+        { 
+            EMOTE1, 
+            EMOTE2, 
+            EMOTE3, 
+            EMOTE4, 
+            EMOTE5, 
+            EMOTE6, 
+            EMOTE7, 
+            EMOTE8 
+        };
 
         private enum SwitchTiming
         {
@@ -274,13 +285,13 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
                 using (new EditorGUI.IndentLevelScope())
                 {
-                    for (int i = 0; i < EMOTE_NAMES.Length; i++)
+                    foreach (var emoteName in Enum.GetNames(typeof(Emote)))
                     {
-                        if (standingAnimController == null || standingAnimController[EMOTE_NAMES[i]].name == EMOTE_NAMES[i])
+                        if (standingAnimController == null || standingAnimController[emoteName].name == emoteName)
                         {
                             AnimationClip dummyAnim;
                             dummyAnim = EditorGUILayout.ObjectField(
-                                EMOTE_NAMES[i],
+                                emoteName,
                                 null,
                                 typeof(AnimationClip),
                                 true
@@ -288,9 +299,9 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                         }
                         else
                         {
-                            standingAnimController[EMOTE_NAMES[i]] = EditorGUILayout.ObjectField(
-                                EMOTE_NAMES[i],
-                                standingAnimController[EMOTE_NAMES[i]],
+                            standingAnimController[emoteName] = EditorGUILayout.ObjectField(
+                                emoteName,
+                                standingAnimController[emoteName],
                                 typeof(AnimationClip),
                                 true
                             ) as AnimationClip;
@@ -343,7 +354,10 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             {
                 if (GUILayout.Button("Set EmoteSwitch"))
                 {
-                    SetEmoteSwitchV3(avatar, propList, outputFolderPath, standingAnimController);
+                    var onEmote = (Emote)((int)selectedOnOffEmote * 2);
+                    var offEmote = (Emote)((int)selectedOnOffEmote * 2 + 1);
+
+                    SetEmoteSwitchV3(avatar, propList, outputFolderPath, onEmote, offEmote, standingAnimController);
                 }
             }
 
@@ -365,7 +379,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <param name="propList">EmoteSwitchで追加するオブジェクトのリスト</param>
         /// <param name="outputFolderPath">EmoteSwitchV3で作成するAnimationClipを保存するフォルダパス</param>
         /// <param name="avatarController">EmoteSwitchV3で作成するAnimationClipを設定するAnimatorOverrideController</param>
-        private void SetEmoteSwitchV3(VRC_AvatarDescriptor avatar, IList<Prop> propList, string outputFolderPath, AnimatorOverrideController avatarController = null)
+        private void SetEmoteSwitchV3(VRC_AvatarDescriptor avatar, IList<Prop> propList, string outputFolderPath, Emote OnEmote, Emote OffEmote, AnimatorOverrideController avatarController = null)
         {
             if (avatar == null || propList == null || string.IsNullOrEmpty(outputFolderPath))
                 return;
@@ -531,8 +545,8 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
             // EmoteAnimationを設定する
             Undo.RecordObject(avatarController, "Set Animation For EmoteSwitch to Controller");
-            avatarController[EMOTE_NAMES[(int)selectedOnOffEmote * 2]] = emoteOnAnimClip;
-            avatarController[EMOTE_NAMES[(int)selectedOnOffEmote * 2 + 1]] = emoteOffAnimClip;
+            avatarController[Enum.GetName(typeof(Emote), OnEmote)] = emoteOnAnimClip;
+            avatarController[Enum.GetName(typeof(Emote), OffEmote)] = emoteOffAnimClip;
 
             Undo.SetCurrentGroupName(UNDO_TEXT + avatarName);
         }
@@ -729,9 +743,9 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         {
             var anims = AssetDatabase.LoadAllAssetsAtPath(fbxPath);
 
-            var animObj = System.Array.Find<Object>(anims, item => item is AnimationClip && item.name == animName);
+            var animObj = System.Array.Find<UnityEngine.Object>(anims, item => item is AnimationClip && item.name == animName);
 
-            var animClip = Object.Instantiate(animObj) as AnimationClip;
+            var animClip = UnityEngine.Object.Instantiate(animObj) as AnimationClip;
 
             return animClip;
         }
