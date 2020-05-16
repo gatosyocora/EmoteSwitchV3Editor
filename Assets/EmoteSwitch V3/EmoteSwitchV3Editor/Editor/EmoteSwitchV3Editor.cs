@@ -99,7 +99,6 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
         private string savedFolderPath;
 
-        private static readonly char BSLASH = '\\';
         private static readonly string EMOTE_SWITCH_SAVED_FOLDER = "ESV3Animation";
 
         [MenuItem("EmoteSwitch/EmoteSwitchV3 Editor")]
