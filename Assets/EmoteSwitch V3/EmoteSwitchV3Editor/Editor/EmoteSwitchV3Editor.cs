@@ -357,7 +357,15 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                     var onEmote = (Emote)((int)selectedOnOffEmote * 2);
                     var offEmote = (Emote)((int)selectedOnOffEmote * 2 + 1);
 
-                    SetEmoteSwitchV3(avatar, propList, outputFolderPath, onEmote, offEmote, standingAnimController);
+                    AnimationClip emoteAnimClip = null;
+                    if (useIdleAnim)
+                    {
+                        emoteAnimClip = GetAnimationClipFromFbx(
+                                            IDLE_ANIAMTION_FBX_PATH,
+                                            IDLE_ANIMATION_NAME);
+                    }
+
+                    SetEmoteSwitchV3(avatar, propList, outputFolderPath, onEmote, offEmote, emoteAnimClip, standingAnimController);
                 }
             }
 
