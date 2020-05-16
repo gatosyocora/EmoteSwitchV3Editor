@@ -32,12 +32,12 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         private GameObject targetObject = null;
         private List<Prop> propList;
 
-        private enum EMOTE_TYPE
+        private enum EmoteType
         {
             ON, OFF
         }
 
-        private enum TO_STATE
+        private enum ToState
         {
             ACTIVE, INACTIVE
         }
@@ -71,7 +71,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
         private readonly string[] EMOTE_NAMES = { "EMOTE1", "EMOTE2", "EMOTE3", "EMOTE4", "EMOTE5", "EMOTE6", "EMOTE7", "EMOTE8" };
 
-        private enum EMOTES
+        private enum Emotes
         {
             EMOTE1and2,
             EMOTE3and4,
@@ -79,14 +79,14 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             EMOTE7ands8,
         };
 
-        private EMOTES selectedOnOffEmote = EMOTES.EMOTE1and2;
+        private Emotes selectedOnOffEmote = Emotes.EMOTE1and2;
 
-        private enum SWITCH_TIMING
+        private enum SwitchTiming
         {
             BEFORE,
             AFTER,
         };
-        private SWITCH_TIMING timing = SWITCH_TIMING.AFTER;
+        private SwitchTiming timing = SwitchTiming.AFTER;
 
         private bool useIdleAnim = true;
 
@@ -228,7 +228,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 EditorGUILayout.LabelField("Emote(Standing Anims)", EditorStyles.boldLabel);
 
                 // どのEmoteに設定するか選ぶ
-                selectedOnOffEmote = (EMOTES)EditorGUILayout.EnumPopup("ON & OFF Emote", selectedOnOffEmote);
+                selectedOnOffEmote = (Emotes)EditorGUILayout.EnumPopup("ON & OFF Emote", selectedOnOffEmote);
 
                 using (new EditorGUI.IndentLevelScope())
                 {
@@ -435,36 +435,36 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 if (emoteOnAnimClip == null)
                 {
                     emoteOnAnimClip = CreateEmoteAnimClip(
-                                            EMOTE_TYPE.ON, 
+                                            EmoteType.ON, 
                                             savedFolderPath + propObj.name, 
                                             toggleObj.transform, 
                                             avatarObj.transform, 
-                                            (propDefaultState) ? TO_STATE.INACTIVE : TO_STATE.ACTIVE);
+                                            (propDefaultState) ? ToState.INACTIVE : ToState.ACTIVE);
                 }
                 else
                 {
                     AddEmoteAnimClip(ref emoteOnAnimClip, 
                                         toggleObj.transform,
                                         avatarObj.transform, 
-                                        (propDefaultState) ? TO_STATE.INACTIVE : TO_STATE.ACTIVE, 
+                                        (propDefaultState) ? ToState.INACTIVE : ToState.ACTIVE, 
                                         emoteAnimTime);
                 }
                 // 初期状態がActiveならActiveにする(propStartState==Active(true) -> TO_ACTIVE)
                 if (emoteOffAnimClip == null)
                 {
                     emoteOffAnimClip = CreateEmoteAnimClip(
-                                            EMOTE_TYPE.OFF, 
+                                            EmoteType.OFF, 
                                             savedFolderPath + propObj.name, 
                                             toggleObj.transform,
                                             avatarObj.transform, 
-                                            (propDefaultState) ? TO_STATE.ACTIVE : TO_STATE.INACTIVE);
+                                            (propDefaultState) ? ToState.ACTIVE : ToState.INACTIVE);
                 }
                 else
                 {
                     AddEmoteAnimClip(ref emoteOffAnimClip, 
                                         toggleObj.transform,
                                         avatarObj.transform, 
-                                        (propDefaultState) ? TO_STATE.ACTIVE : TO_STATE.INACTIVE, 
+                                        (propDefaultState) ? ToState.ACTIVE : ToState.INACTIVE, 
                                         emoteAnimTime);
                 }
             }
@@ -508,7 +508,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <param name="targetObj">Emoteで操作するオブジェクト(Toggle1)</param>
         /// <param name="emoteType">EmoteAnimationでON状態にするのかOFF状態にするのか</param>
         /// <returns></returns>
-        private AnimationClip CreateEmoteAnimClip(EMOTE_TYPE type, string savedFilePath, Transform targetTrans, Transform rootTrans, TO_STATE emoteType)
+        private AnimationClip CreateEmoteAnimClip(EmoteType type, string savedFilePath, Transform targetTrans, Transform rootTrans, ToState emoteType)
         {
             var animClip = CreateAnimationClip(savedFilePath, type);
 
@@ -521,7 +521,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             string path = AnimationUtility.CalculateTransformPath(targetTrans, rootTrans);
 
             string animFilePath = emoteSwitchV3EditorFolderPath;
-            if (emoteType == TO_STATE.INACTIVE)
+            if (emoteType == ToState.INACTIVE)
             {
                 animFilePath += EMOTE_OFF_ANIMFILE_PATH;
             }
@@ -555,12 +555,12 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <param name="propName"></param>
         /// <param name="targetObj"></param>
         /// <param name="emoteType"></param>
-        private void AddEmoteAnimClip(ref AnimationClip animClip, Transform targetTrans, Transform rootTrans, TO_STATE emoteType, float offsetTime)
+        private void AddEmoteAnimClip(ref AnimationClip animClip, Transform targetTrans, Transform rootTrans, ToState emoteType, float offsetTime)
         {
             string path = AnimationUtility.CalculateTransformPath(targetTrans, rootTrans);
 
             string animFilePath = emoteSwitchV3EditorFolderPath;
-            if (emoteType == TO_STATE.INACTIVE)
+            if (emoteType == ToState.INACTIVE)
             {
                 animFilePath += EMOTE_OFF_ANIMFILE_PATH;
             }
@@ -589,7 +589,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 // AnimationClipよりAnimationCurveを取得
                 var curve = AnimationUtility.GetEditorCurve(originClip, bindings[i]);
 
-                if (timing == SWITCH_TIMING.AFTER && offsetTime > 0f)
+                if (timing == SwitchTiming.AFTER && offsetTime > 0f)
                 {
                     // Offset分だけずらす
                     var keysNum = curve.keys.Length;
@@ -678,11 +678,11 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <param name="objName"></param>
         /// <param name="fileType"></param>
         /// <returns></returns>
-        private AnimationClip CreateAnimationClip(string savedFilePath, EMOTE_TYPE type)
+        private AnimationClip CreateAnimationClip(string savedFilePath, EmoteType type)
         {
             AnimationClip animClip = new AnimationClip();
 
-            savedFilePath += ((type == EMOTE_TYPE.ON) ? "_ON" : "_OFF") + ".anim";
+            savedFilePath += ((type == EmoteType.ON) ? "_ON" : "_OFF") + ".anim";
 
             CreateFolderIfNeeded(savedFilePath);
 
