@@ -363,11 +363,11 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// </summary>
         /// <param name="avatar">アバターのVRC_AvatarDescriptor</param>
         /// <param name="propList">EmoteSwitchで追加するオブジェクトのリスト</param>
-        /// <param name="savedFolderPath">EmoteSwitchV3で作成するAnimationClipを保存するフォルダパス</param>
+        /// <param name="outputFolderPath">EmoteSwitchV3で作成するAnimationClipを保存するフォルダパス</param>
         /// <param name="avatarController">EmoteSwitchV3で作成するAnimationClipを設定するAnimatorOverrideController</param>
-        private void SetEmoteSwitchV3(VRC_AvatarDescriptor avatar, List<Prop> propList, string savedFolderPath, AnimatorOverrideController avatarController = null)
+        private void SetEmoteSwitchV3(VRC_AvatarDescriptor avatar, List<Prop> propList, string outputFolderPath, AnimatorOverrideController avatarController = null)
         {
-            if (avatar == null || propList == null || string.IsNullOrEmpty(savedFolderPath))
+            if (avatar == null || propList == null || string.IsNullOrEmpty(outputFolderPath))
                 return;
 
             var avatarObj = avatar.gameObject;
@@ -496,7 +496,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 if (emoteOnAnimClip == null)
                 {
                     emoteOnAnimClip = CreateEmoteAnimClip(
-                                            savedFolderPath + propObj.name + "_ON.anim", 
+                                            outputFolderPath + propObj.name + "_ON.anim", 
                                             toggleObj.transform,
                                             avatarTrans, 
                                             !propDefaultState,
@@ -514,7 +514,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 if (emoteOffAnimClip == null)
                 {
                     emoteOffAnimClip = CreateEmoteAnimClip(
-                                            savedFolderPath + propObj.name + "_OFF.anim", 
+                                            outputFolderPath + propObj.name + "_OFF.anim", 
                                             toggleObj.transform,
                                             avatarTrans,
                                             !propDefaultState,
