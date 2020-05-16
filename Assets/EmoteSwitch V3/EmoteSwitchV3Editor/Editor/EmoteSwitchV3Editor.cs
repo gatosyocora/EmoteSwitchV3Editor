@@ -185,7 +185,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
                 if (check.changed && avatar != null)
                 {
-                    GetAvatarInfo(avatar);
+                    SetAvatarInfo(avatar);
                     savedFolderPath = GetSavedFolderPath(avatar.CustomStandingAnims);
                 }
             }
@@ -551,7 +551,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <summary>
         /// アバターの情報を取得する
         /// </summary>
-        private void GetAvatarInfo(VRC_AvatarDescriptor avatar)
+        private void SetAvatarInfo(VRC_AvatarDescriptor avatar)
         {
             if (avatar == null) return;
             standingAnimController = avatar.CustomStandingAnims;
