@@ -562,7 +562,8 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <param name="propTrans">出し入れするオブジェクトのTransform</param>
         /// <param name="rootTrans">VRC_AvatarDescriptorが設定されたアバターのルートオブジェクトのTransform</param>
         /// <param name="toState">EmoteSwitchV3によって変更されたあとのPropの状態</param>
-        /// <returns></returns>
+        /// <param name="poseAnimClip">Emote中のアニメーション</param>
+        /// <returns>EmoteSwitchV3を実行させるAnimaionClip</returns>
         private AnimationClip CreateEmoteAnimClip(string savedFilePath, Transform propTrans, Transform rootTrans, bool toState, AnimationClip poseAnimClip = null)
         {
             var animClip = new AnimationClip();
