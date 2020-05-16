@@ -390,7 +390,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
         /// <param name="offEmote">EmoteSwitchV3でOff用のEmoteを設定する場所</param>
         /// <param name="emoteAnimClip">EmoteSwitchV3で作成するAnimationClipで実行されるAnimation</param>
         /// <param name="avatarController">EmoteSwitchV3で作成するAnimationClipを設定するAnimatorOverrideController</param>
-        private void SetEmoteSwitchV3(VRC_AvatarDescriptor avatar,
+        public static void SetEmoteSwitchV3(VRC_AvatarDescriptor avatar,
                                         IList<Prop> propList,
                                         string outputFolderPath,
                                         Emote onEmote, Emote offEmote,
@@ -593,7 +593,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
         /// <param name="toState">EmoteSwitchV3によって変更されたあとのPropの状態</param>
         /// <param name="poseAnimClip">Emote中のアニメーション</param>
         /// <returns>EmoteSwitchV3を実行させるAnimaionClip</returns>
-        private AnimationClip CreateEmoteAnimClip(string savedFilePath, Transform propTrans, Transform rootTrans, bool toState, AnimationClip poseAnimClip = null)
+        private static AnimationClip CreateEmoteAnimClip(string savedFilePath, Transform propTrans, Transform rootTrans, bool toState, AnimationClip poseAnimClip = null)
         {
             var animClip = new AnimationClip();
 
@@ -648,7 +648,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
         /// <param name="rootTrans">VRC_AvatarDescriptorが設定されたアバターのルートオブジェクトのTransform</param>
         /// <param name="toState">EmoteSwitchV3によって変更されたあとのPropの状態</param>
         /// <param name="offsetTime">EmoteSwitchV3の発動開始タイミングのoffset</param>
-        private void AddEmoteAnimClip(ref AnimationClip animClip, Transform propTrans, Transform rootTrans, bool toState, float offsetTime = 0f)
+        private static void AddEmoteAnimClip(ref AnimationClip animClip, Transform propTrans, Transform rootTrans, bool toState, float offsetTime = 0f)
         {
             string path = AnimationUtility.CalculateTransformPath(propTrans, rootTrans);
 
@@ -716,7 +716,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
         /// </summary>
         /// <param name="originClip"></param>
         /// <param name="targetClip"></param>
-        private void CopyAnimationKeys(AnimationClip originClip, AnimationClip targetClip)
+        private static void CopyAnimationKeys(AnimationClip originClip, AnimationClip targetClip)
         {
             foreach (var binding in AnimationUtility.GetCurveBindings(originClip).ToArray())
             {
@@ -732,7 +732,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
         /// </summary>
         /// <param name="anim"></param>
         /// <returns></returns>
-        private float GetAnimationTime(AnimationClip anim)
+        private static float GetAnimationTime(AnimationClip anim)
         {
             float animTime = 0f;
 
@@ -770,7 +770,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        private int GetSameNameObjectsMaxNumInBrother(GameObject obj)
+        private static int GetSameNameObjectsMaxNumInBrother(GameObject obj)
         {
             var pattern = @"^" + obj.name + " ?[0-9]*";
             var parentTrans = obj.transform.parent;
@@ -826,7 +826,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
         }
 
         // 特定のオブジェクトにコンポーネントを値ごとコピーする
-        private void CopyComponent(GameObject targetObj, Component fromComp)
+        private static void CopyComponent(GameObject targetObj, Component fromComp)
         {
             ComponentUtility.CopyComponent(fromComp);
             ComponentUtility.PasteComponentAsNew(targetObj);
