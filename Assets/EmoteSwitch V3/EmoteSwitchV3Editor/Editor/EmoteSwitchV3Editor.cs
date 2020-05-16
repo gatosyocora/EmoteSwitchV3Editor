@@ -805,8 +805,8 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <summary>
         /// EmoteSwitchV3のフォルダパスを取得する（Assets/...）
         /// </summary>
-        /// <returns></returns>
-        private string GetEmoteSwitchV3EditorFolderPath()
+        /// <returns>EmoteSwitchV3のフォルダパス</returns>
+        public string GetEmoteSwitchV3EditorFolderPath()
         {
             return GetAssetPathForSearch("EmoteSwitch V3 t:Folder");
         }
