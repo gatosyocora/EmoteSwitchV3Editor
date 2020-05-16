@@ -477,7 +477,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
                 var followers = propObj.GetComponents<VRC_IKFollower>();
                 var jointTrans = emoteSwitchObj.transform.Find(JOINT_PATH_IN_PREFAB);
 
-                if (joints.Length > 0 || followers.Length > 0)
+                if (joints.Any() || followers.Any())
                 {
                     if (prop.IsLocalEmoteSwitch)
                     {
@@ -490,7 +490,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
                         Undo.SetTransformParent(localSystemObj.transform, jointTrans, localSystemObj.name + " SetParent to " + jointTrans.name);
                     }
 
-                    if (joints.Length > 0)
+                    if (joints.Any())
                     {
                         var rigidBody = propObj.GetComponent<Rigidbody>();
                         CopyComponent(jointTrans.gameObject, rigidBody);
