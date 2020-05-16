@@ -397,7 +397,8 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
                                         AnimationClip emoteAnimClip = null,
                                         AnimatorOverrideController avatarController = null)
         {
-            if (avatar == null || propList == null || string.IsNullOrEmpty(outputFolderPath))
+            if (avatar == null || propList == null || string.IsNullOrEmpty(outputFolderPath) ||
+                !Enum.IsDefined(typeof(Emote), onEmote) || !Enum.IsDefined(typeof(Emote), offEmote))
                 return;
 
             var avatarObj = avatar.gameObject;
