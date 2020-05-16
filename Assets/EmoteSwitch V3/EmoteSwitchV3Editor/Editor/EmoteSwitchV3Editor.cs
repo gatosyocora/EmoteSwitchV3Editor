@@ -372,6 +372,9 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <param name="avatarController">EmoteSwitchV3で作成するAnimationClipを設定するAnimatorOverrideController</param>
         private void SetEmoteSwitchV3(VRC_AvatarDescriptor avatar, List<Prop> propList, string savedFolderPath, AnimatorOverrideController avatarController = null)
         {
+            if (avatar == null || propList == null || string.IsNullOrEmpty(savedFolderPath))
+                return;
+
             var avatarObj = avatar.gameObject;
             var avatarTrans = avatar.transform;
             var avatarName = avatar.name;
