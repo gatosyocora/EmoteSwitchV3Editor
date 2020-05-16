@@ -677,7 +677,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
                 // AnimationClipよりAnimationCurveを取得
                 var curve = AnimationUtility.GetEditorCurve(originClip, bindings[i]);
 
-                if (timing == SwitchTiming.AFTER && offsetTime > 0f)
+                if (offsetTime > 0f)
                 {
                     // Offset分だけずらす
                     var keysNum = curve.keys.Length;
