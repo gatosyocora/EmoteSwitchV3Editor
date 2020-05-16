@@ -348,7 +348,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             {
                 if (GUILayout.Button("Set EmoteSwitch"))
                 {
-                    SetEmoteSwitchV3(targetObject, propList, savedFolderPath);
+                    SetEmoteSwitchV3(avatar, propList, savedFolderPath);
                 }
             }
 
@@ -366,12 +366,16 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <summary>
         /// EmoteSwitchを作成する
         /// </summary>
-        /// <param name="avatarObj">アバターのルートオブジェクト</param>
+        /// <param name="avatar">アバターのVRC_AvatarDescriptor</param>
         /// <param name="propList">EmoteSwitchで追加するオブジェクトのリスト</param>
         /// <param name="savedFolderPath">EmoteSwitchV3で作成するAnimationClipを保存するフォルダパス</param>
-        private void SetEmoteSwitchV3(GameObject avatarObj, List<Prop> propList, string savedFolderPath)
+        private void SetEmoteSwitchV3(VRC_AvatarDescriptor avatar, List<Prop> propList, string savedFolderPath)
         {
-            Undo.RegisterCompleteObjectUndo(avatarObj, UNDO_TEXT + avatarObj.name);
+            var avatarObj = avatar.gameObject;
+            var avatarTrans = avatar.transform;
+            var avatarName = avatar.name;
+
+            Undo.RegisterCompleteObjectUndo(avatarObj, UNDO_TEXT + avatarName);
 
             AnimationClip emoteOnAnimClip = null, emoteOffAnimClip = null;
             float emoteAnimTime = 0f;
@@ -432,7 +436,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                         PrefabUtility.UnpackPrefabInstance(localSystemObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
                     }
                     var localOnSwitchTrans = localSystemObj.transform.Find(LOCAL_ROOT_BELOW_OBJECT_NAME);
-                    Undo.SetTransformParent(localOnSwitchTrans, avatarObj.transform, localOnSwitchTrans.name + " SetParent to " + avatarObj.name);
+                    Undo.SetTransformParent(localOnSwitchTrans, avatarTrans, localOnSwitchTrans.name + " SetParent to " + avatarName);
                     localOnSwitchTrans.localPosition = Vector3.zero;
                     localOnSwitchTrans.localRotation = Quaternion.identity;
                     localOnSwitchTrans.localScale = Vector3.one;
@@ -490,8 +494,8 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 {
                     emoteOnAnimClip = CreateEmoteAnimClip(
                                             savedFolderPath + propObj.name + "_ON.anim", 
-                                            toggleObj.transform, 
-                                            avatarObj.transform, 
+                                            toggleObj.transform,
+                                            avatarTrans, 
                                             !propDefaultState,
                                             poseAnimClip);
                 }
@@ -499,7 +503,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 {
                     AddEmoteAnimClip(ref emoteOnAnimClip, 
                                         toggleObj.transform,
-                                        avatarObj.transform, 
+                                        avatarTrans, 
                                         !propDefaultState, 
                                         emoteAnimTime);
                 }
@@ -510,7 +514,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                     emoteOffAnimClip = CreateEmoteAnimClip(
                                             savedFolderPath + propObj.name + "_OFF.anim", 
                                             toggleObj.transform,
-                                            avatarObj.transform,
+                                            avatarTrans,
                                             !propDefaultState,
                                             poseAnimClip);
                 }
@@ -518,7 +522,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 {
                     AddEmoteAnimClip(ref emoteOffAnimClip, 
                                         toggleObj.transform,
-                                        avatarObj.transform, 
+                                        avatarTrans, 
                                         !propDefaultState, 
                                         emoteAnimTime);
                 }
@@ -529,7 +533,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             standingAnimController[EMOTE_NAMES[(int)selectedOnOffEmote * 2]] = emoteOnAnimClip;
             standingAnimController[EMOTE_NAMES[(int)selectedOnOffEmote * 2 + 1]] = emoteOffAnimClip;
 
-            Undo.SetCurrentGroupName(UNDO_TEXT + avatarObj.name);
+            Undo.SetCurrentGroupName(UNDO_TEXT + avatarName);
         }
 
         /// <summary>
