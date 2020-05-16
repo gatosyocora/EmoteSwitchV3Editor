@@ -36,19 +36,9 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         private AnimatorOverrideController standingAnimController = null;
         private List<Prop> propList;
 
-        private enum EmoteType
-        {
-            ON, OFF
-        }
+        private string savedFolderPath;
 
-        /// <summary>
-        /// EmoteSwitchV3によって変更された後のPropの状態
-        /// </summary>
-        private enum ToState
-        {
-            ACTIVE, INACTIVE
-        }
-
+        #region StaticReadOnly
         /***** 必要に応じてここからの値を変更する *****/
 
         /// <summary>
@@ -106,12 +96,26 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// </summary>
         private static readonly string OBJECT_PATH_IN_LOCAL_SYSTEM = "On_Animation_Particle/On_Object/After_On/Object";
 
+        /// <summary>
+        /// SetEmoteSwitchV3に対するUNDOのテキスト
+        /// </summary>
+        private static readonly string UNDO_TEXT = "SetEmoteSwitchV3 to ";
+
+        /// <summary>
+        /// EmoteSwitchV3Editorで作成されるAssetを保存するフォルダの名称
+        /// </summary>
+        private static readonly string EMOTE_SWITCH_SAVED_FOLDER = "ESV3Animation";
+
+        /// <summary>
+        /// AnimatorOverrideControllerのEmoteの名称
+        /// </summary>
+        private static readonly string[] EMOTE_NAMES = { "EMOTE1", "EMOTE2", "EMOTE3", "EMOTE4", "EMOTE5", "EMOTE6", "EMOTE7", "EMOTE8" };
+
         /***** 必要に応じてここまでの値を変更する *****/
 
         private string emoteSwitchV3EditorFolderPath;
         private string idleAniamtionFbxPath;
 
-        private readonly string[] EMOTE_NAMES = { "EMOTE1", "EMOTE2", "EMOTE3", "EMOTE4", "EMOTE5", "EMOTE6", "EMOTE7", "EMOTE8" };
 
         /// <summary>
         /// EmoteSwitchV3のアニメーションファイルを設定するEmoteの場所
@@ -123,7 +127,6 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             EMOTE5and6,
             EMOTE7ands8,
         };
-
         private Emotes selectedOnOffEmote = Emotes.EMOTE1and2;
 
         private enum SwitchTiming
@@ -134,12 +137,6 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         private SwitchTiming timing = SwitchTiming.AFTER;
 
         private bool useIdleAnim = true;
-
-        private static readonly string UNDO_TEXT = "SetEmoteSwitchV3 to ";
-
-        private string savedFolderPath;
-
-        private static readonly string EMOTE_SWITCH_SAVED_FOLDER = "ESV3Animation";
 
         #region GUI
         private bool useLocal = false;
