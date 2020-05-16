@@ -81,9 +81,6 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
         private EMOTES selectedOnOffEmote = EMOTES.EMOTE1and2;
 
-        //  Advanced Setting
-        private bool isOpeningAdvancedSetting = false;
-
         private enum SWITCH_TIMING
         {
             BEFORE,
@@ -95,11 +92,15 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
         private static readonly string UNDO_TEXT = "SetEmoteSwitchV3 to ";
 
-        private bool useLocal = false;
-
         private string savedFolderPath;
 
         private static readonly string EMOTE_SWITCH_SAVED_FOLDER = "ESV3Animation";
+
+        #region GUI
+        private bool useLocal = false;
+        private bool isOpeningAdvancedSetting = false;
+        #endregion
+
 
         [MenuItem("EmoteSwitch/EmoteSwitchV3 Editor")]
         private static void Create()
