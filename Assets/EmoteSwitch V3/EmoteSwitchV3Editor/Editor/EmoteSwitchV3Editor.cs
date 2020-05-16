@@ -224,7 +224,6 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
             using (new EditorGUI.IndentLevelScope())
             {
-                var index = 1;
                 foreach (var prop in propList)
                 {
                     using (new EditorGUILayout.HorizontalScope())
@@ -232,7 +231,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                         prop.DefaultState = EditorGUILayout.Toggle(prop.DefaultState, GUILayout.MinWidth(30), GUILayout.MaxWidth(30));
 
                         prop.Obj = EditorGUILayout.ObjectField(
-                            "Prop " + (index++),
+                            "Prop " + (propList.IndexOf(prop)+1),
                             prop.Obj,
                             typeof(GameObject),
                             true
