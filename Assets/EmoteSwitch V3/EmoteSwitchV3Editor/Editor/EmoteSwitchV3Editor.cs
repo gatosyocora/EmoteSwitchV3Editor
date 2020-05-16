@@ -12,7 +12,7 @@ using System;
 // ver 1.3
 // created by gatosyocora
 
-namespace Gatosyocora.EmoteSwitchV3Editor
+namespace Gatosyocora.EmoteSwitchV3Editor.Editor
 {
     public class EmoteSwitchV3Editor : EditorWindow
     {
