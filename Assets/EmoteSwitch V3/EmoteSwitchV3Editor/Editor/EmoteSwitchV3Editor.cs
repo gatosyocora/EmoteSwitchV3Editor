@@ -24,7 +24,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             public bool DefaultState { get; set; } = false;
             public bool IsLocalEmoteSwitch { get; set; } = false;
 
-            public Prop(GameObject obj)
+            public Prop(GameObject obj = null)
             {
                 this.Obj = obj;
                 DefaultState = false;
@@ -166,7 +166,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         {
             propList = new List<Prop>()
             {
-                new Prop(null)
+                new Prop()
             };
 
             IDLE_ANIAMTION_FBX_PATH = GetIdleAnimationFbxPath();
