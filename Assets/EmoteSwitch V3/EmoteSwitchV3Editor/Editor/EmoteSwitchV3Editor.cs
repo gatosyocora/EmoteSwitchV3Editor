@@ -562,7 +562,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// </summary>
         /// <param name="props"></param>
         /// <returns></returns>
-        private bool CheckSettingProp(List<Prop> propList)
+        private bool CheckSettingProp(IReadOnlyList<Prop> propList)
         {
             if (propList == null) return false;
             return propList.Any(x => x.Obj != null);
