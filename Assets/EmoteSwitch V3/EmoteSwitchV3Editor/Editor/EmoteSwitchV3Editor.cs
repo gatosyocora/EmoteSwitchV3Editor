@@ -137,7 +137,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             EMOTE1and2,
             EMOTE3and4,
             EMOTE5and6,
-            EMOTE7ands8,
+            EMOTE7and8,
         };
         private EmotePair selectedOnOffEmote = EmotePair.EMOTE1and2;
 
