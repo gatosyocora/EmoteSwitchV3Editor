@@ -701,7 +701,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// </summary>
         /// <param name="originClip"></param>
         /// <param name="targetClip"></param>
-        public static void CopyAnimationKeys(AnimationClip originClip, AnimationClip targetClip)
+        private void CopyAnimationKeys(AnimationClip originClip, AnimationClip targetClip)
         {
             foreach (var binding in AnimationUtility.GetCurveBindings(originClip).ToArray())
             {
