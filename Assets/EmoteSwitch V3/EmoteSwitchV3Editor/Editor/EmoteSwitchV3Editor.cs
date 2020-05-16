@@ -383,6 +383,12 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 PrefabUtility.UnpackPrefabInstance(avatarObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             }
 
+            AnimationClip poseAnimClip = null;
+            if (useIdleAnim)
+            {
+                poseAnimClip = GetAnimationClipFromFbx(idleAniamtionFbxPath, IDLE_ANIMATION_NAME);
+            }
+
             foreach (var prop in propList)
             {
                 var propObj = prop.Obj;
@@ -483,11 +489,11 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 if (emoteOnAnimClip == null)
                 {
                     emoteOnAnimClip = CreateEmoteAnimClip(
-                                            EmoteType.ON, 
-                                            savedFolderPath + propObj.name, 
+                                            savedFolderPath + propObj.name + "_ON.anim", 
                                             toggleObj.transform, 
                                             avatarObj.transform, 
-                                            (propDefaultState) ? ToState.INACTIVE : ToState.ACTIVE);
+                                            !propDefaultState,
+                                            poseAnimClip);
                 }
                 else
                 {
@@ -502,11 +508,11 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 if (emoteOffAnimClip == null)
                 {
                     emoteOffAnimClip = CreateEmoteAnimClip(
-                                            EmoteType.OFF, 
-                                            savedFolderPath + propObj.name, 
+                                            savedFolderPath + propObj.name + "_OFF.anim", 
                                             toggleObj.transform,
-                                            avatarObj.transform, 
-                                            (propDefaultState) ? ToState.ACTIVE : ToState.INACTIVE);
+                                            avatarObj.transform,
+                                            !propDefaultState,
+                                            poseAnimClip);
                 }
                 else
                 {
@@ -552,31 +558,36 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <summary>
         /// EmoteSwitch用のEmoteAnimationClipを作成する
         /// </summary>
-        /// <param name="fileType">ON用のAnimationファイルなのかOFF用のAnimationファイルなのか</param>
-        /// <param name="propName">出し入れするオブジェクトの名前</param>
-        /// <param name="targetObj">Emoteで操作するオブジェクト(Toggle1)</param>
-        /// <param name="emoteType">EmoteAnimationでON状態にするのかOFF状態にするのか</param>
+        /// <param name="savedFilePath">作成するAnimationClipの保存先ファイル名</param>
+        /// <param name="propTrans">出し入れするオブジェクトのTransform</param>
+        /// <param name="rootTrans">VRC_AvatarDescriptorが設定されたアバターのルートオブジェクトのTransform</param>
+        /// <param name="toState">EmoteSwitchV3によって変更されたあとのPropの状態</param>
         /// <returns></returns>
-        private AnimationClip CreateEmoteAnimClip(EmoteType type, string savedFilePath, Transform targetTrans, Transform rootTrans, ToState emoteType)
+        private AnimationClip CreateEmoteAnimClip(string savedFilePath, Transform propTrans, Transform rootTrans, bool toState, AnimationClip poseAnimClip = null)
         {
-            var animClip = CreateAnimationClip(savedFilePath, type);
+            var animClip = new AnimationClip();
 
-            if (useIdleAnim)
+            CreateFolderIfNeeded(savedFilePath);
+
+            AssetDatabase.CreateAsset(animClip, AssetDatabase.GenerateUniqueAssetPath(savedFilePath));
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            if (poseAnimClip != null)
             {
-                var idleAnimClip = GetAnimationClipFromFbx(idleAniamtionFbxPath, IDLE_ANIMATION_NAME);
-                CopyAnimationKeys(idleAnimClip, animClip);
+                CopyAnimationKeys(poseAnimClip, animClip);
             }
 
-            string path = AnimationUtility.CalculateTransformPath(targetTrans, rootTrans);
+            string path = AnimationUtility.CalculateTransformPath(propTrans, rootTrans);
 
             string animFilePath = emoteSwitchV3EditorFolderPath;
-            if (emoteType == ToState.INACTIVE)
+            if (toState)
             {
-                animFilePath += EMOTE_OFF_ANIMFILE_PATH;
+                animFilePath += EMOTE_ON_ANIMFILE_PATH;
             }
             else
             {
-                animFilePath += EMOTE_ON_ANIMFILE_PATH;
+                animFilePath += EMOTE_OFF_ANIMFILE_PATH;
             }
 
             var originClip = AssetDatabase.LoadAssetAtPath<AnimationClip>(animFilePath);
@@ -717,28 +728,6 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             var animObj = System.Array.Find<Object>(anims, item => item is AnimationClip && item.name == animName);
 
             var animClip = Object.Instantiate(animObj) as AnimationClip;
-
-            return animClip;
-        }
-
-        /// <summary>
-        /// アニメーションファイルを作成する
-        /// </summary>
-        /// <param name="objName"></param>
-        /// <param name="fileType"></param>
-        /// <returns></returns>
-        private AnimationClip CreateAnimationClip(string savedFilePath, EmoteType type)
-        {
-            AnimationClip animClip = new AnimationClip();
-
-            savedFilePath += ((type == EmoteType.ON) ? "_ON" : "_OFF") + ".anim";
-
-            CreateFolderIfNeeded(savedFilePath);
-
-            AssetDatabase.CreateAsset(animClip,
-                AssetDatabase.GenerateUniqueAssetPath(savedFilePath));
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
 
             return animClip;
         }
