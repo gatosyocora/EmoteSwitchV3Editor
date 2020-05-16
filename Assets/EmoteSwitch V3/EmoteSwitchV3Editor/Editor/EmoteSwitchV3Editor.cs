@@ -399,11 +399,11 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
             foreach (var prop in propList)
             {
+                // Propが未設定なら次へ
+                if (prop == null) continue;
+
                 var propObj = prop.Obj;
                 var propDefaultState = prop.DefaultState;
-
-                // Propが未設定なら次へ
-                if (propObj == null) continue;
 
                 // propObjと同じ位置にEmoteSwitchV3を作成する
                 var parentTrans = propObj.transform.parent;
