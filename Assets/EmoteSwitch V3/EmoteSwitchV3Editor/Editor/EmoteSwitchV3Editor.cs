@@ -22,13 +22,13 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         {
             public GameObject Obj { get; set; }
             public bool DefaultState { get; set; } = false;
-            public bool isLocalEmoteSwitch { get; set; } = false;
+            public bool IsLocalEmoteSwitch { get; set; } = false;
 
             public Prop(GameObject obj)
             {
                 this.Obj = obj;
                 DefaultState = false;
-                isLocalEmoteSwitch = false;
+                IsLocalEmoteSwitch = false;
             }
         }
 
@@ -110,8 +110,6 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
         private string emoteSwitchV3EditorFolderPath;
         private string idleAniamtionFbxPath;
-
-
 
         private readonly string[] EMOTE_NAMES = { "EMOTE1", "EMOTE2", "EMOTE3", "EMOTE4", "EMOTE5", "EMOTE6", "EMOTE7", "EMOTE8" };
 
@@ -234,7 +232,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
                         if (useLocal)
                         {
-                            prop.isLocalEmoteSwitch = EditorGUILayout.ToggleLeft("", prop.isLocalEmoteSwitch, GUILayout.Width(30f));
+                            prop.IsLocalEmoteSwitch = EditorGUILayout.ToggleLeft("", prop.IsLocalEmoteSwitch, GUILayout.Width(30f));
                         }
                     }
                 }
@@ -337,7 +335,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                         useLocal = EditorGUILayout.Toggle("Use Local EmoteSwitch", useLocal);
                         if (check.changed)
                         {
-                            propList.ForEach(x => x.isLocalEmoteSwitch = useLocal);
+                            propList.ForEach(x => x.IsLocalEmoteSwitch = useLocal);
                         }
                     }
                 }
@@ -430,7 +428,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 objectTrans.gameObject.SetActive(propDefaultState);
 
                 GameObject localSystemObj = null;
-                if (prop.isLocalEmoteSwitch)
+                if (prop.IsLocalEmoteSwitch)
                 {
                     // LocalSystemを設定する
                     var localSystemPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(emoteSwitchV3EditorFolderPath + LOCAL_SYSTEM_PREFAB_PATH);
@@ -460,7 +458,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
                 if (joints.Length > 0 || followers.Length > 0)
                 {
-                    if (prop.isLocalEmoteSwitch)
+                    if (prop.IsLocalEmoteSwitch)
                     {
                         var jointObj = new GameObject("EmoteSwitchV3_Local_" + propObj.name + "_Joint");
                         Undo.RegisterCreatedObjectUndo(jointObj, "Create " + jointObj.name);
