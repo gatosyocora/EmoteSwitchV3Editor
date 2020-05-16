@@ -132,14 +132,14 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <summary>
         /// EmoteSwitchV3のアニメーションファイルを設定するEmoteの場所
         /// </summary>
-        private enum Emotes
+        private enum EmotePair
         {
             EMOTE1and2,
             EMOTE3and4,
             EMOTE5and6,
             EMOTE7ands8,
         };
-        private Emotes selectedOnOffEmote = Emotes.EMOTE1and2;
+        private EmotePair selectedOnOffEmote = EmotePair.EMOTE1and2;
 
         private enum SwitchTiming
         {
@@ -281,7 +281,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 EditorGUILayout.LabelField("Emote(Standing Anims)", EditorStyles.boldLabel);
 
                 // どのEmoteに設定するか選ぶ
-                selectedOnOffEmote = (Emotes)EditorGUILayout.EnumPopup("ON & OFF Emote", selectedOnOffEmote);
+                selectedOnOffEmote = (EmotePair)EditorGUILayout.EnumPopup("ON & OFF Emote", selectedOnOffEmote);
 
                 using (new EditorGUI.IndentLevelScope())
                 {
