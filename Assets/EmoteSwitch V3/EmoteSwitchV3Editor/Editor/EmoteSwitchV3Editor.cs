@@ -378,7 +378,6 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             Undo.RegisterCompleteObjectUndo(avatarObj, UNDO_TEXT + avatarName);
 
             AnimationClip emoteOnAnimClip = null, emoteOffAnimClip = null;
-            float emoteAnimTime = 0f;
 
             // PrefabのInstanceに対してSetParentする場合はUnpackする必要がある
             // 2018からのPrefabシステムからSetParent時に自動的にUnPackしなくなった
@@ -504,8 +503,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                     AddEmoteAnimClip(ref emoteOnAnimClip, 
                                         toggleObj.transform,
                                         avatarTrans, 
-                                        !propDefaultState, 
-                                        emoteAnimTime);
+                                        !propDefaultState);
                 }
 
                 // 初期状態が非ActiveならActiveにする(propDefaultState==Active(false) -> Active(true))
@@ -523,8 +521,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                     AddEmoteAnimClip(ref emoteOffAnimClip, 
                                         toggleObj.transform,
                                         avatarTrans, 
-                                        !propDefaultState, 
-                                        emoteAnimTime);
+                                        !propDefaultState);
                 }
             }
 
