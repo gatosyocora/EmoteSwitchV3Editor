@@ -130,15 +130,15 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
         /// AnimatorOverrideControllerのEmoteの名称
         /// </summary>
         private enum Emote
-        { 
-            EMOTE1, 
-            EMOTE2, 
-            EMOTE3, 
-            EMOTE4, 
-            EMOTE5, 
-            EMOTE6, 
-            EMOTE7, 
-            EMOTE8 
+        {
+            EMOTE1,
+            EMOTE2,
+            EMOTE3,
+            EMOTE4,
+            EMOTE5,
+            EMOTE6,
+            EMOTE7,
+            EMOTE8
         };
 
         private enum SwitchTiming
@@ -232,7 +232,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
                         prop.DefaultState = EditorGUILayout.Toggle(prop.DefaultState, GUILayout.MinWidth(30), GUILayout.MaxWidth(30));
 
                         prop.Obj = EditorGUILayout.ObjectField(
-                            "Prop " + (propList.IndexOf(prop)+1),
+                            "Prop " + (propList.IndexOf(prop) + 1),
                             prop.Obj,
                             typeof(GameObject),
                             true
@@ -390,11 +390,11 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
         /// <param name="offEmote">EmoteSwitchV3でOff用のEmoteを設定する場所</param>
         /// <param name="emoteAnimClip">EmoteSwitchV3で作成するAnimationClipで実行されるAnimation</param>
         /// <param name="avatarController">EmoteSwitchV3で作成するAnimationClipを設定するAnimatorOverrideController</param>
-        private void SetEmoteSwitchV3(  VRC_AvatarDescriptor avatar, 
-                                        IList<Prop> propList, 
-                                        string outputFolderPath, 
-                                        Emote onEmote, Emote offEmote, 
-                                        AnimationClip emoteAnimClip = null, 
+        private void SetEmoteSwitchV3(VRC_AvatarDescriptor avatar,
+                                        IList<Prop> propList,
+                                        string outputFolderPath,
+                                        Emote onEmote, Emote offEmote,
+                                        AnimationClip emoteAnimClip = null,
                                         AnimatorOverrideController avatarController = null)
         {
             if (avatar == null || propList == null || string.IsNullOrEmpty(outputFolderPath))
@@ -520,25 +520,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
                 if (emoteOnAnimClip == null)
                 {
                     emoteOnAnimClip = CreateEmoteAnimClip(
-                                            outputFolderPath + propObj.name + "_ON.anim", 
-                                            toggleObj.transform,
-                                            avatarTrans, 
-                                            !propDefaultState,
-                                            emoteAnimClip);
-                }
-                else
-                {
-                    AddEmoteAnimClip(ref emoteOnAnimClip, 
-                                        toggleObj.transform,
-                                        avatarTrans, 
-                                        !propDefaultState);
-                }
-
-                // 初期状態が非ActiveならActiveにする(propDefaultState==Active(false) -> Active(true))
-                if (emoteOffAnimClip == null)
-                {
-                    emoteOffAnimClip = CreateEmoteAnimClip(
-                                            outputFolderPath + propObj.name + "_OFF.anim", 
+                                            outputFolderPath + propObj.name + "_ON.anim",
                                             toggleObj.transform,
                                             avatarTrans,
                                             !propDefaultState,
@@ -546,9 +528,27 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
                 }
                 else
                 {
-                    AddEmoteAnimClip(ref emoteOffAnimClip, 
+                    AddEmoteAnimClip(ref emoteOnAnimClip,
                                         toggleObj.transform,
-                                        avatarTrans, 
+                                        avatarTrans,
+                                        !propDefaultState);
+                }
+
+                // 初期状態が非ActiveならActiveにする(propDefaultState==Active(false) -> Active(true))
+                if (emoteOffAnimClip == null)
+                {
+                    emoteOffAnimClip = CreateEmoteAnimClip(
+                                            outputFolderPath + propObj.name + "_OFF.anim",
+                                            toggleObj.transform,
+                                            avatarTrans,
+                                            !propDefaultState,
+                                            emoteAnimClip);
+                }
+                else
+                {
+                    AddEmoteAnimClip(ref emoteOffAnimClip,
+                                        toggleObj.transform,
+                                        avatarTrans,
                                         !propDefaultState);
                 }
             }
@@ -856,7 +856,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
                 AssetDatabase.Refresh();
                 return true;
             }
-            
+
             return false;
         }
     }
