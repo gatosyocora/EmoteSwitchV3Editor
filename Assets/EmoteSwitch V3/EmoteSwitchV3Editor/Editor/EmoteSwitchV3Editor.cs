@@ -378,8 +378,16 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <param name="avatar">アバターのVRC_AvatarDescriptor</param>
         /// <param name="propList">EmoteSwitchで追加するオブジェクトのリスト</param>
         /// <param name="outputFolderPath">EmoteSwitchV3で作成するAnimationClipを保存するフォルダパス</param>
+        /// <param name="onEmote">EmoteSwitchV3でOn用のEmoteを設定する場所</param>
+        /// <param name="offEmote">EmoteSwitchV3でOff用のEmoteを設定する場所</param>
+        /// <param name="emoteAnimClip">EmoteSwitchV3で作成するAnimationClipで実行されるAnimation</param>
         /// <param name="avatarController">EmoteSwitchV3で作成するAnimationClipを設定するAnimatorOverrideController</param>
-        private void SetEmoteSwitchV3(VRC_AvatarDescriptor avatar, IList<Prop> propList, string outputFolderPath, Emote OnEmote, Emote OffEmote, AnimatorOverrideController avatarController = null)
+        private void SetEmoteSwitchV3(  VRC_AvatarDescriptor avatar, 
+                                        IList<Prop> propList, 
+                                        string outputFolderPath, 
+                                        Emote onEmote, Emote offEmote, 
+                                        AnimationClip emoteAnimClip = null, 
+                                        AnimatorOverrideController avatarController = null)
         {
             if (avatar == null || propList == null || string.IsNullOrEmpty(outputFolderPath))
                 return;
@@ -402,12 +410,6 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             if (PrefabUtility.IsPartOfPrefabInstance(avatarObj))
             {
                 PrefabUtility.UnpackPrefabInstance(avatarObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            }
-
-            AnimationClip poseAnimClip = null;
-            if (useIdleAnim)
-            {
-                poseAnimClip = GetAnimationClipFromFbx(IDLE_ANIAMTION_FBX_PATH, IDLE_ANIMATION_NAME);
             }
 
             foreach (var prop in propList)
@@ -514,7 +516,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                                             toggleObj.transform,
                                             avatarTrans, 
                                             !propDefaultState,
-                                            poseAnimClip);
+                                            emoteAnimClip);
                 }
                 else
                 {
@@ -532,7 +534,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                                             toggleObj.transform,
                                             avatarTrans,
                                             !propDefaultState,
-                                            poseAnimClip);
+                                            emoteAnimClip);
                 }
                 else
                 {
@@ -545,8 +547,8 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 
             // EmoteAnimationを設定する
             Undo.RecordObject(avatarController, "Set Animation For EmoteSwitch to Controller");
-            avatarController[Enum.GetName(typeof(Emote), OnEmote)] = emoteOnAnimClip;
-            avatarController[Enum.GetName(typeof(Emote), OffEmote)] = emoteOffAnimClip;
+            avatarController[Enum.GetName(typeof(Emote), onEmote)] = emoteOnAnimClip;
+            avatarController[Enum.GetName(typeof(Emote), offEmote)] = emoteOffAnimClip;
 
             Undo.SetCurrentGroupName(UNDO_TEXT + avatarName);
         }
