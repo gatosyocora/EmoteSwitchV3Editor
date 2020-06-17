@@ -78,6 +78,11 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
         private static readonly string EMOTESWITCH_CONTROLLER_PATH = "/ToggleSwitch/Switch.controller";
 
         /// <summary>
+        /// Toggle1のAnimatorに設定するAnimatorControllerまでのパス(Inversion版)
+        /// </summary>
+        private static readonly string EMOTESWITCH_CONTROLLER_INVERSION_PATH = "/ToggleSwitch/Switch_Inversion.controller";
+
+        /// <summary>
         /// Emoteアニメーションとして参照するアニメーションの名前
         /// </summary>
         private static readonly string IDLE_ANIMATION_NAME = "IDLE";
@@ -106,6 +111,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
         /// EmoteSwitchV3Editorで作成されるAssetを保存するフォルダの名称
         /// </summary>
         private static readonly string EMOTE_SWITCH_SAVED_FOLDER = "ESV3Animation";
+
 
         /***** 必要に応じてここまでの値を変更する *****/
         #endregion
@@ -154,6 +160,8 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
         private bool useLocal = false;
         private bool isOpeningAdvancedSetting = false;
         #endregion
+
+        private bool useInversion = false;
 
 
         [MenuItem("EmoteSwitch/EmoteSwitchV3 Editor")]
@@ -337,6 +345,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
                 using (new EditorGUI.IndentLevelScope())
                 {
                     useIdleAnim = EditorGUILayout.Toggle("Use IDLE Animation", useIdleAnim);
+                    useInversion = EditorGUILayout.Toggle("Use Inversion", useInversion);
 
                     using (var check = new EditorGUI.ChangeCheckScope())
                     {
@@ -365,7 +374,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
                                             IDLE_ANIMATION_NAME);
                     }
 
-                    SetEmoteSwitchV3(avatar, propList, outputFolderPath, onEmote, offEmote, emoteAnimClip, standingAnimController);
+                    SetEmoteSwitchV3(avatar, propList, outputFolderPath, onEmote, offEmote, emoteAnimClip, standingAnimController, useInversion);
                 }
             }
 
@@ -395,7 +404,8 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
                                         string outputFolderPath,
                                         Emote onEmote, Emote offEmote,
                                         AnimationClip emoteAnimClip = null,
-                                        AnimatorOverrideController avatarController = null)
+                                        AnimatorOverrideController avatarController = null,
+                                        bool useInversion = false)
         {
             if (avatar == null || propList == null || string.IsNullOrEmpty(outputFolderPath) ||
                 !Enum.IsDefined(typeof(Emote), onEmote) || !Enum.IsDefined(typeof(Emote), offEmote))
@@ -436,6 +446,10 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
                 var emoteSwitchPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(emoteSwitchV3EditorFolderPath + PREFAB1_PATH);
                 var emoteSwitchObj = Instantiate(emoteSwitchPrefab, propObj.transform.position, Quaternion.identity) as GameObject;
                 emoteSwitchObj.name = "EmoteSwitch V3_" + propObj.name;
+                if (useInversion)
+                {
+                    emoteSwitchObj.name += "_Inversion";
+                }
                 Undo.RegisterCreatedObjectUndo(emoteSwitchObj, "Instantiate " + emoteSwitchObj.name);
                 Undo.SetTransformParent(emoteSwitchObj.transform, parentTrans, emoteSwitchObj.name + " SetParent to " + parentTrans.name);
 
@@ -516,7 +530,15 @@ namespace Gatosyocora.EmoteSwitchV3Editor.Editor
                 // EmoteAnimationを作成する
                 var toggleObj = emoteSwitchObj.transform.Find(TOOGLE1_PATH_IN_PREFAB).gameObject;
                 var animator = toggleObj.GetComponent<Animator>();
-                var controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(emoteSwitchV3EditorFolderPath + EMOTESWITCH_CONTROLLER_PATH);
+                RuntimeAnimatorController controller;
+                if (!useInversion)
+                {
+                    controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(emoteSwitchV3EditorFolderPath + EMOTESWITCH_CONTROLLER_PATH);
+                }
+                else
+                {
+                    controller = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(emoteSwitchV3EditorFolderPath + EMOTESWITCH_CONTROLLER_INVERSION_PATH);
+                } 
                 animator.runtimeAnimatorController = controller;
 
                 // 初期状態がActiveなら非Activeにする(propDefaultState==Active(true) -> Active(false))
