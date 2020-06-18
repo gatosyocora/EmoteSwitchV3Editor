@@ -560,7 +560,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// </summary>
         /// <param name="props"></param>
         /// <returns></returns>
-        private bool CheckSettingProp(IReadOnlyList<Prop> propList)
+        private static bool CheckSettingProp(IReadOnlyList<Prop> propList)
         {
             if (propList == null) return false;
             return propList.Any(x => x.Obj != null);
@@ -738,7 +738,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <param name="fbxPath"></param>
         /// <param name="animName"></param>
         /// <returns></returns>
-        private AnimationClip GetAnimationClipFromFbx(string fbxPath, string animName)
+        private static AnimationClip GetAnimationClipFromFbx(string fbxPath, string animName)
         {
             var animObj = AssetDatabase.LoadAllAssetsAtPath(fbxPath)
                             .Where(x => x is AnimationClip && x.name == animName)
@@ -802,7 +802,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// Idleアニメーションを参照するFbxのパスを取得する（Assets/...）
         /// </summary>
         /// <returns></returns>
-        private string GetIdleAnimationFbxPath()
+        private static string GetIdleAnimationFbxPath()
         {
             return GetAssetPathForSearch("Male_Standing_Pose t:Model");
         }
