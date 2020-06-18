@@ -22,7 +22,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         private string emote7Name = "EMOTE7";
         private string emote8Name = "EMOTE8";
 
-        public override async void OnInspectorGUI()
+        public override void OnInspectorGUI()
         {
             var tester = target as EmoteSwitchV3Tester;
 
@@ -50,11 +50,11 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                     EditorGUILayout.LabelField("Emote 1 & 2");
                     if (GUILayout.Button(emote1Name))
                     {
-                        await PlayEmote(1, tester);
+                        PlayEmote(1, tester);
                     }
                     if (GUILayout.Button(emote2Name))
                     {
-                        await PlayEmote(2, tester);
+                        PlayEmote(2, tester);
                     }
                 }
 
@@ -64,11 +64,11 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                     EditorGUILayout.LabelField("Emote 3 & 4");
                     if (GUILayout.Button(emote3Name))
                     {
-                        await PlayEmote(3, tester);
+                        PlayEmote(3, tester);
                     }
                     if (GUILayout.Button(emote4Name))
                     {
-                        await PlayEmote(4, tester);
+                        PlayEmote(4, tester);
                     }
                 }
 
@@ -78,11 +78,11 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                     EditorGUILayout.LabelField("Emote 5 & 6");
                     if (GUILayout.Button(emote5Name))
                     {
-                        await PlayEmote(5, tester);
+                        PlayEmote(5, tester);
                     }
                     if (GUILayout.Button(emote6Name))
                     {
-                        await PlayEmote(6, tester);
+                        PlayEmote(6, tester);
                     }
                 }
 
@@ -92,17 +92,17 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                     EditorGUILayout.LabelField("Emote 7 & 8");
                     if (GUILayout.Button(emote7Name))
                     {
-                        await PlayEmote(7, tester);
+                        PlayEmote(7, tester);
                     }
                     if (GUILayout.Button(emote8Name))
                     {
-                        await PlayEmote(8, tester);
+                        PlayEmote(8, tester);
                     }
                 }
             }
         }
 
-        private async Task PlayEmote(int emoteNumber, EmoteSwitchV3Tester tester)
+        private async void PlayEmote(int emoteNumber, EmoteSwitchV3Tester tester)
         {
             float second;
             var emoteClip = tester.controller[$"EMOTE{emoteNumber}"];
