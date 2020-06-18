@@ -112,6 +112,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// </summary>
         private static readonly string EMOTE_SWITCH_SAVED_FOLDER = "ESV3Animation";
 
+        private static readonly string TEST_PREFAB_Path = "/EmoteSwitchV3Editor/EmoteSwitchTester.prefab";
 
         /***** 必要に応じてここまでの値を変更する *****/
         #endregion
@@ -155,9 +156,10 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         private SwitchTiming timing = SwitchTiming.AFTER;
 
         private bool useIdleAnim = true;
+        private bool useLocal = false;
+        private bool addTester = true;
 
         #region GUI
-        private bool useLocal = false;
         private bool isOpeningAdvancedSetting = false;
         #endregion
 
@@ -342,6 +344,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 using (new EditorGUI.IndentLevelScope())
                 {
                     useIdleAnim = EditorGUILayout.Toggle("Use IDLE Animation", useIdleAnim);
+                    addTester = EditorGUILayout.Toggle("Add Tester", addTester);
 
                     using (var check = new EditorGUI.ChangeCheckScope())
                     {
@@ -371,6 +374,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                     }
 
                     SetEmoteSwitchV3(avatar, propList, outputFolderPath, onEmote, offEmote, emoteAnimClip, standingAnimController);
+                    if (addTester && !ExistsTester(avatar)) SetTesterPrefab(avatar);
                 }
             }
 
@@ -880,6 +884,28 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// EmoteSwitchテスト用のPrefabInstanceを追加する
+        /// </summary>
+        /// <param name="avatar"></param>
+        public static void SetTesterPrefab(VRC_AvatarDescriptor avatar)
+        {
+            var emoteSwitchV3EditorFolderPath = GetEmoteSwitchV3EditorFolderPath();
+            var testerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(emoteSwitchV3EditorFolderPath + TEST_PREFAB_Path);
+            var testerObj = PrefabUtility.InstantiatePrefab(testerPrefab, avatar.transform) as GameObject;
+            testerObj.transform.SetParent(avatar.transform);
+        }
+
+        /// <summary>
+        /// EmoteSwitchテスト用のPrefabInstanceが存在するか
+        /// </summary>
+        /// <param name="avatar"></param>
+        /// <returns></returns>
+        public static bool ExistsTester(VRC_AvatarDescriptor avatar)
+        {
+            return !(avatar.transform.Find("EmoteSwitchTester") is null);
         }
     }
 }
