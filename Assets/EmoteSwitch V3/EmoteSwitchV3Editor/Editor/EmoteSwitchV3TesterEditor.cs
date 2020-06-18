@@ -5,76 +5,120 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(EmoteSwitchV3Tester))]
-public class EmoteSwitchV3TesterEditor : Editor
+// EmoteSwitchV3Tester v1.0
+// Copyright (c) 2020 gatosyocora
+
+namespace Gatosyocora.EmoteSwitchV3Editor
 {
-    private bool startWaiting = false;
-
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(EmoteSwitchV3Tester))]
+    public class EmoteSwitchV3TesterEditor : Editor
     {
-        var tester = target as EmoteSwitchV3Tester;
+        private string emote1Name = "EMOTE1";
+        private string emote2Name = "EMOTE2";
+        private string emote3Name = "EMOTE3";
+        private string emote4Name = "EMOTE4";
+        private string emote5Name = "EMOTE5";
+        private string emote6Name = "EMOTE6";
+        private string emote7Name = "EMOTE7";
+        private string emote8Name = "EMOTE8";
 
-        base.OnInspectorGUI();
-        using (new EditorGUI.DisabledGroupScope(!EditorApplication.isPlaying))
+        public override async void OnInspectorGUI()
         {
-            if (GUILayout.Button("Reset"))
+            var tester = target as EmoteSwitchV3Tester;
+
+            base.OnInspectorGUI();
+
+            if (EditorApplication.isPlaying)
             {
-                tester.animator.SetInteger("Emote", 0);
+                emote1Name = tester.controller["EMOTE1"].name;
+                emote2Name = tester.controller["EMOTE2"].name;
+                emote3Name = tester.controller["EMOTE3"].name;
+                emote4Name = tester.controller["EMOTE4"].name;
+                emote5Name = tester.controller["EMOTE5"].name;
+                emote6Name = tester.controller["EMOTE6"].name;
+                emote7Name = tester.controller["EMOTE7"].name;
+                emote8Name = tester.controller["EMOTE8"].name;
             }
 
-            EditorGUILayout.Space();
-
-            using (new EditorGUILayout.HorizontalScope())
+            using (new EditorGUI.DisabledGroupScope(!EditorApplication.isPlaying))
             {
-                EditorGUILayout.LabelField("Emote1&2");
-                if (GUILayout.Button("ON"))
-                {
-                    tester.animator.SetInteger("Emote", 1);
-                }
-                if (GUILayout.Button("OFF"))
-                {
-                    tester.animator.SetInteger("Emote", 2);
-                }
-            }
+                EditorGUILayout.Space();
 
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                EditorGUILayout.LabelField("Emote3&4");
-                if (GUILayout.Button("ON"))
+                using (new EditorGUI.DisabledGroupScope(emote1Name == "EMOTE1"))
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    tester.animator.SetInteger("Emote", 3);
+                    EditorGUILayout.LabelField("Emote 1 & 2");
+                    if (GUILayout.Button(emote1Name))
+                    {
+                        await PlayEmote(1, tester);
+                    }
+                    if (GUILayout.Button(emote2Name))
+                    {
+                        await PlayEmote(2, tester);
+                    }
                 }
-                if (GUILayout.Button("OFF"))
-                {
-                    tester.animator.SetInteger("Emote", 4);
-                }
-            }
 
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                EditorGUILayout.LabelField("Emote5&6");
-                if (GUILayout.Button("ON"))
+                using (new EditorGUI.DisabledGroupScope(emote3Name == "EMOTE3"))
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    tester.animator.SetInteger("Emote", 5);
+                    EditorGUILayout.LabelField("Emote 3 & 4");
+                    if (GUILayout.Button(emote3Name))
+                    {
+                        await PlayEmote(3, tester);
+                    }
+                    if (GUILayout.Button(emote4Name))
+                    {
+                        await PlayEmote(4, tester);
+                    }
                 }
-                if (GUILayout.Button("OFF"))
-                {
-                    tester.animator.SetInteger("Emote", 6);
-                }
-            }
 
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                EditorGUILayout.LabelField("Emote7&8");
-                if (GUILayout.Button("ON"))
+                using (new EditorGUI.DisabledGroupScope(emote5Name == "EMOTE5"))
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    tester.animator.SetInteger("Emote", 7);
+                    EditorGUILayout.LabelField("Emote 5 & 6");
+                    if (GUILayout.Button(emote5Name))
+                    {
+                        await PlayEmote(5, tester);
+                    }
+                    if (GUILayout.Button(emote6Name))
+                    {
+                        await PlayEmote(6, tester);
+                    }
                 }
-                if (GUILayout.Button("OFF"))
+
+                using (new EditorGUI.DisabledGroupScope(emote7Name == "EMOTE7"))
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    tester.animator.SetInteger("Emote", 8);
+                    EditorGUILayout.LabelField("Emote 7 & 8");
+                    if (GUILayout.Button(emote7Name))
+                    {
+                        await PlayEmote(7, tester);
+                    }
+                    if (GUILayout.Button(emote8Name))
+                    {
+                        await PlayEmote(8, tester);
+                    }
                 }
             }
         }
+
+        private async Task PlayEmote(int emoteNumber, EmoteSwitchV3Tester tester)
+        {
+            float second;
+            var emoteClip = tester.controller[$"EMOTE{emoteNumber}"];
+            if (!(emoteClip is null) && emoteClip.name != $"EMOTE{emoteNumber}")
+            {
+                second = tester.controller[$"EMOTE{emoteNumber}"].length;
+            }
+            else
+            {
+                second = 1;
+            }
+            tester.animator.SetInteger("Emote", emoteNumber);
+            await Task.Delay((int)(second * 1000));
+            tester.animator.SetInteger("Emote", 0);
+        }
     }
+
 }
+
