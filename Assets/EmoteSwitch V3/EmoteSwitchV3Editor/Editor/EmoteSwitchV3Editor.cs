@@ -561,7 +561,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                                             outputFolderPath + propObj.name + "_OFF.anim",
                                             toggleObj.transform,
                                             avatarTrans,
-                                            !propDefaultState,
+                                            propDefaultState,
                                             emoteAnimClip);
                 }
                 else
@@ -569,7 +569,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                     AddEmoteAnimClip(ref emoteOffAnimClip,
                                         toggleObj.transform,
                                         avatarTrans,
-                                        !propDefaultState);
+                                        propDefaultState);
                 }
             }
 
