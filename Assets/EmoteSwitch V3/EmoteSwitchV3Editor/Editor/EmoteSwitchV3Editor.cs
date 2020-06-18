@@ -421,6 +421,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 Undo.SetTransformParent(propObj.transform, objectTrans, propObj.name + " SetParent to " + objectTrans.name);
                 objectTrans.gameObject.SetActive(propDefaultState);
 
+                #region LocalSystem
                 GameObject localSystemObj = null;
                 if (prop.IsLocalEmoteSwitch)
                 {
@@ -444,7 +445,9 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                     var objectInLocalSystemTrans = localSystemObj.transform.Find(OBJECT_PATH_IN_LOCAL_SYSTEM);
                     Undo.SetTransformParent(emoteSwitchObj.transform, objectInLocalSystemTrans, emoteSwitchObj.name + " SetParent to " + objectInLocalSystemTrans.name);
                 }
+                #endregion
 
+                #region Joint
                 // JointやIK_Followerがついたオブジェクトを非アクティブにすると壊れるので回避
                 var joints = propObj.GetComponents<Joint>();
                 var followers = propObj.GetComponents<VRC_IKFollower>();
@@ -482,6 +485,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                         Undo.DestroyObjectImmediate(follower);
                     }
                 }
+                #endregion
 
                 // EmoteAnimationを作成する
                 var toggleObj = emoteSwitchObj.transform.Find(TOOGLE1_PATH_IN_PREFAB).gameObject;
