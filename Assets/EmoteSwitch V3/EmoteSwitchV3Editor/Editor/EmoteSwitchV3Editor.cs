@@ -16,23 +16,6 @@ namespace Gatosyocora.EmoteSwitchV3Editor
 {
     public class EmoteSwitchV3Editor : EditorWindow
     {
-        /// <summary>
-        /// EmoteSwitchV3で操作するオブジェクト
-        /// </summary>
-        public class Prop
-        {
-            public GameObject Obj { get; set; }
-            public bool DefaultState { get; set; } = false;
-            public bool IsLocalEmoteSwitch { get; set; } = false;
-
-            public Prop(GameObject obj = null)
-            {
-                this.Obj = obj;
-                DefaultState = false;
-                IsLocalEmoteSwitch = false;
-            }
-        }
-
         private VRC_AvatarDescriptor avatar = null;
         private AnimatorOverrideController standingAnimController = null;
         private List<Prop> propList;
@@ -120,33 +103,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         private string EMOTE_SWITCH_V3_EDITOR_FOLDER_PATH;
         private string IDLE_ANIAMTION_FBX_PATH;
 
-
-        /// <summary>
-        /// EmoteSwitchV3のアニメーションファイルを設定するEmoteの場所
-        /// </summary>
-        private enum EmotePair
-        {
-            EMOTE1and2,
-            EMOTE3and4,
-            EMOTE5and6,
-            EMOTE7and8,
-        };
         private EmotePair selectedOnOffEmote = EmotePair.EMOTE1and2;
-
-        /// <summary>
-        /// AnimatorOverrideControllerのEmoteの名称
-        /// </summary>
-        public enum Emote
-        {
-            EMOTE1,
-            EMOTE2,
-            EMOTE3,
-            EMOTE4,
-            EMOTE5,
-            EMOTE6,
-            EMOTE7,
-            EMOTE8
-        };
 
         private enum SwitchTiming
         {
