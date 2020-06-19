@@ -508,7 +508,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                                             outputFolderPath + propObj.name + "_ON.anim",
                                             toggleObj.transform,
                                             avatarTrans,
-                                            !propDefaultState,
+                                            EmoteAnimationType.On,
                                             emoteAnimClip);
                 }
                 else
@@ -516,7 +516,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                     AddEmoteAnimClip(ref emoteOnAnimClip,
                                         toggleObj.transform,
                                         avatarTrans,
-                                        !propDefaultState);
+                                        EmoteAnimationType.On);
                 }
 
                 // 初期状態が非ActiveならActiveにする(propDefaultState==Active(false) -> Active(true))
@@ -526,7 +526,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                                             outputFolderPath + propObj.name + "_OFF.anim",
                                             toggleObj.transform,
                                             avatarTrans,
-                                            propDefaultState,
+                                            EmoteAnimationType.Off,
                                             emoteAnimClip);
                 }
                 else
@@ -534,7 +534,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                     AddEmoteAnimClip(ref emoteOffAnimClip,
                                         toggleObj.transform,
                                         avatarTrans,
-                                        propDefaultState);
+                                        EmoteAnimationType.Off);
                 }
             }
 
@@ -572,10 +572,10 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <param name="savedFilePath">作成するAnimationClipの保存先ファイル名</param>
         /// <param name="propTrans">EmoteSwitchV3で操作するオブジェクトのTransform</param>
         /// <param name="rootTrans">VRC_AvatarDescriptorが設定されたアバターのルートオブジェクトのTransform</param>
-        /// <param name="toState">EmoteSwitchV3によって変更されたあとのPropの状態</param>
+        /// <param name="animType">EmoteSwitchV3に関連したEmoteの種類(On→EmoteSwitch有効化, Off→EmoteSwitch無効化)</param>
         /// <param name="poseAnimClip">Emote中のアニメーション</param>
         /// <returns>EmoteSwitchV3を実行させるAnimaionClip</returns>
-        private static AnimationClip CreateEmoteAnimClip(string savedFilePath, Transform propTrans, Transform rootTrans, bool toState, AnimationClip poseAnimClip = null)
+        private static AnimationClip CreateEmoteAnimClip(string savedFilePath, Transform propTrans, Transform rootTrans, EmoteAnimationType animType, AnimationClip poseAnimClip = null)
         {
             var animClip = new AnimationClip();
 
@@ -595,7 +595,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
             var emoteSwitchV3EditorFolderPath = GetEmoteSwitchV3EditorFolderPath();
 
             string animFilePath;
-            if (toState)
+            if (animType == EmoteAnimationType.On)
             {
                 animFilePath = emoteSwitchV3EditorFolderPath + EMOTE_ON_ANIMFILE_PATH;
             }
@@ -628,16 +628,16 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <param name="animClip">EmoteSwitchV3に必要なキーを追加するAnimationClip</param>
         /// <param name="propTrans">EmoteSwitchV3で操作するオブジェクトのTransform</param>
         /// <param name="rootTrans">VRC_AvatarDescriptorが設定されたアバターのルートオブジェクトのTransform</param>
-        /// <param name="toState">EmoteSwitchV3によって変更されたあとのPropの状態</param>
+        /// <param name="animType">EmoteSwitchV3に関連したEmoteの種類(On→EmoteSwitch有効化, Off→EmoteSwitch無効化)</param>
         /// <param name="offsetTime">EmoteSwitchV3の発動開始タイミングのoffset</param>
-        private static void AddEmoteAnimClip(ref AnimationClip animClip, Transform propTrans, Transform rootTrans, bool toState, float offsetTime = 0f)
+        private static void AddEmoteAnimClip(ref AnimationClip animClip, Transform propTrans, Transform rootTrans, EmoteAnimationType animType, float offsetTime = 0f)
         {
             string path = AnimationUtility.CalculateTransformPath(propTrans, rootTrans);
 
             var emoteSwitchV3EditorFolderPath = GetEmoteSwitchV3EditorFolderPath();
 
             string animFilePath;
-            if (toState)
+            if (animType == EmoteAnimationType.On)
             {
                 animFilePath = emoteSwitchV3EditorFolderPath + EMOTE_ON_ANIMFILE_PATH;
             }
