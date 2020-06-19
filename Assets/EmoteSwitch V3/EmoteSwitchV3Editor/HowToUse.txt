@@ -11,7 +11,8 @@ EmoteSwitchV3を自動設定するツールです
 ・EmoteSwitchV3Editor.cs : ツール本体
 ・EmoteSwitch V3_Editor.prefab : ツールで追加するEmoteSwitchV3のprefab
 ・Sample_ON.anim, Sample_OFF.anim : 生成されるAnimationファイルのサンプル(削除してもいいです)
-・Animationsフォルダ : ツールで作成したAnimationファイルが保存されるフォルダ
+・Animationsフォルダ : ツールで作成したAnimationファイルが保存される元フォルダ
+・EmoteSwitchTester.prefab : EmoteSwitchV3のテスト用Prefab
 
 〇機能
 Avatar : EmoteSwitchを設定するアバター
@@ -23,7 +24,8 @@ Standing Anims : Avatarに設定されているCustomOverrideController
 ON & OFF Emote : どのEmoteにEmoteSwitch用のアニメーションを設定するか
 EMOTE n : Standing AnimsのCustomOverrideControllerに設定されているEmote
 Advanced Setting : 応用的な使い方の設定をする項目
-  use IDLE Animation : チェックを入れるとEmote時に地面に埋まらないようにIDLEアニメーションのキーを追加します
+  Use IDLE Animation : チェックを入れるとEmote時に地面に埋まらないようにIDLEアニメーションのキーを追加します
+  Add Tester : チェックをいれるとテスト用PrefabInstanceがアバター直下に追加されます
   Use Local EmoteSwitch : チェックを入れると他人には変化が見えないEmoteSwitchを設定できるようになります。
 					各Propの横にLocalの項目が増え、チェックに入っているものが対象になります。
 
@@ -40,3 +42,8 @@ Advanced Setting : 応用的な使い方の設定をする項目
 ローカルでのみ作動するEmoteSwitchを設定する場合はAdvanced SettingのUse Local EmoteSwitchにチェックを入れてください
 
 エモートスイッチを設定直後であれば、「Revert before Set EmoteSwitch」でエモートスイッチ設定前に戻すことができます
+
+〇Unity上でのテスト
+Add TesterにチェックをいれているとEmoteSwitchV3を設定時にアバターのルート直下に「EmoteSwitchTester」が追加されます。
+Unity上部の再生ボタンを押して, このオブジェクトのInspectorにあるボタンを選択するとそれぞれのEmoteが実行できます。
+これはEditorOnlyにしてあり, 実際にはアップロードされないので削除しなくても大丈夫です。
