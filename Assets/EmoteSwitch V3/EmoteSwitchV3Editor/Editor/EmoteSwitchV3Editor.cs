@@ -9,7 +9,7 @@ using UnityEditorInternal;
 using System.IO;
 using System;
 
-// ver 1.3
+// ver 1.4
 // created by gatosyocora
 
 namespace Gatosyocora.EmoteSwitchV3Editor
