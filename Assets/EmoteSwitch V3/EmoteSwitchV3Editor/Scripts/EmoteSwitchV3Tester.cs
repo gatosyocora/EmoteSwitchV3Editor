@@ -5,7 +5,7 @@ using UnityEngine;
 using VRCSDK2;
 
 // EmoteSwitchV3Tester v1.0
-// Copyright (c) 2020 gatosyocora
+// created by gatosyocora
 
 namespace Gatosyocora.EmoteSwitchV3Editor
 {
