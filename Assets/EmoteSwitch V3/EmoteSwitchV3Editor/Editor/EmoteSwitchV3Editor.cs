@@ -575,7 +575,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
         /// <param name="animType">EmoteSwitchV3に関連したEmoteの種類(On→EmoteSwitch有効化, Off→EmoteSwitch無効化)</param>
         /// <param name="poseAnimClip">Emote中のアニメーション</param>
         /// <returns>EmoteSwitchV3を実行させるAnimaionClip</returns>
-        private static AnimationClip CreateEmoteAnimClip(string savedFilePath, Transform propTrans, Transform rootTrans, EmoteAnimationType animType, AnimationClip poseAnimClip = null)
+        private static AnimationClip CreateEmoteAnimClip(string savedFilePath, Transform propTrans, Transform rootTrans, EmoteAnimationType animType, AnimationClip poseAnimClip = null, float offsetTime = 0f)
         {
             var animClip = new AnimationClip();
 
@@ -590,34 +590,7 @@ namespace Gatosyocora.EmoteSwitchV3Editor
                 CopyAnimationKeys(poseAnimClip, animClip);
             }
 
-            string path = AnimationUtility.CalculateTransformPath(propTrans, rootTrans);
-
-            var emoteSwitchV3EditorFolderPath = GetEmoteSwitchV3EditorFolderPath();
-
-            string animFilePath;
-            if (animType == EmoteAnimationType.On)
-            {
-                animFilePath = emoteSwitchV3EditorFolderPath + EMOTE_ON_ANIMFILE_PATH;
-            }
-            else
-            {
-                animFilePath = emoteSwitchV3EditorFolderPath + EMOTE_OFF_ANIMFILE_PATH;
-            }
-
-            var originClip = AssetDatabase.LoadAssetAtPath<AnimationClip>(animFilePath);
-            var bindings = AnimationUtility.GetCurveBindings(originClip).ToArray();
-
-            for (int i = 0; i < bindings.Length; i++)
-            {
-                var binding = bindings[i];
-
-                binding.path = path;
-
-                // AnimationClipよりAnimationCurveを取得
-                var curve = AnimationUtility.GetEditorCurve(originClip, bindings[i]);
-                // AnimationClipにキーリダクションを行ったAnimationCurveを設定
-                AnimationUtility.SetEditorCurve(animClip, binding, curve);
-            }
+            AddEmoteAnimClip(ref animClip, propTrans, rootTrans, animType, offsetTime);
 
             return animClip;
         }
